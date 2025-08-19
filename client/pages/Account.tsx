@@ -229,11 +229,12 @@ export default function Account() {
     setIsUploadingAvatar(true);
 
     try {
+      // First, upload the file
       const formData = new FormData();
       formData.append("file", file);
       formData.append("type", "avatar");
 
-      const response = await fetch("/api/upload", {
+      const uploadResponse = await fetch("/api/upload", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
@@ -241,12 +242,35 @@ export default function Account() {
         body: formData,
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        setAvatarUrl(result.url);
-        toast.success("Foto do perfil atualizada!");
-      } else {
+      if (!uploadResponse.ok) {
         toast.error("Erro ao carregar foto");
+        return;
+      }
+
+      const uploadResult = await uploadResponse.json();
+
+      // Then, update user profile with new avatar URL
+      const updateResponse = await fetch("/api/user/avatar", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({ avatarUrl: uploadResult.url }),
+      });
+
+      if (updateResponse.ok) {
+        const updateResult = await updateResponse.json();
+        setAvatarUrl(uploadResult.url);
+
+        // Update the user context to reflect the change immediately
+        // This will need to be handled by refreshing user info from token
+        toast.success("Foto do perfil atualizada!");
+
+        // Refresh page to update user context
+        window.location.reload();
+      } else {
+        toast.error("Erro ao salvar foto no perfil");
       }
     } catch (error) {
       console.error("Avatar upload error:", error);
