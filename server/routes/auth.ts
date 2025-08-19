@@ -431,7 +431,7 @@ export const updateUserAvatar: RequestHandler = (req, res) => {
     // Validate URL format (accept both absolute and relative URLs)
     const isValidUrl = (url: string): boolean => {
       // Check if it's a relative URL (starts with /)
-      if (url.startsWith('/')) {
+      if (url.startsWith("/")) {
         return true;
       }
 

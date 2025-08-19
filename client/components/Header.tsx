@@ -512,7 +512,9 @@ export default function Header({ activeSection }: HeaderProps) {
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-black/5 transition-colors duration-200">
                   <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold overflow-hidden">
-                    {user.avatar && (user.avatar.startsWith("http") || user.avatar.startsWith("/")) ? (
+                    {user.avatar &&
+                    (user.avatar.startsWith("http") ||
+                      user.avatar.startsWith("/")) ? (
                       <img
                         src={user.avatar}
                         alt={user.name}

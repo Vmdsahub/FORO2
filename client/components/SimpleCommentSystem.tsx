@@ -96,7 +96,8 @@ function CommentItem({
         >
           <div className="flex flex-col items-center gap-1">
             <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold hover:bg-gray-800 transition-colors cursor-pointer overflow-hidden">
-              {comment.authorAvatar.startsWith("http") || comment.authorAvatar.startsWith("/") ? (
+              {comment.authorAvatar.startsWith("http") ||
+              comment.authorAvatar.startsWith("/") ? (
                 <img
                   src={comment.authorAvatar}
                   alt={comment.author}

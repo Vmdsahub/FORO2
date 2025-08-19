@@ -322,7 +322,10 @@ export default function Account() {
     }
 
     // Prioridade 2: Avatar do usuário (URLs completas ou relativas)
-    if (user.avatar && (user.avatar.startsWith("http") || user.avatar.startsWith("/"))) {
+    if (
+      user.avatar &&
+      (user.avatar.startsWith("http") || user.avatar.startsWith("/"))
+    ) {
       return (
         <img
           src={user.avatar}
