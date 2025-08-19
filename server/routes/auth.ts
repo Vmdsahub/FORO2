@@ -428,10 +428,23 @@ export const updateUserAvatar: RequestHandler = (req, res) => {
       return res.status(400).json({ message: "URL do avatar é obrigatória" });
     }
 
-    // Validate URL format (basic validation)
-    try {
-      new URL(avatarUrl);
-    } catch {
+    // Validate URL format (accept both absolute and relative URLs)
+    const isValidUrl = (url: string): boolean => {
+      // Check if it's a relative URL (starts with /)
+      if (url.startsWith('/')) {
+        return true;
+      }
+
+      // Check if it's an absolute URL
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    if (!isValidUrl(avatarUrl)) {
       return res.status(400).json({ message: "URL do avatar inválida" });
     }
 
