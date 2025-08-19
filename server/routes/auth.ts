@@ -415,6 +415,54 @@ export const checkPhone: RequestHandler = (req, res) => {
   });
 };
 
+// Update user avatar
+export const updateUserAvatar: RequestHandler = (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Autenticação necessária" });
+    }
+
+    const { avatarUrl } = req.body;
+
+    if (!avatarUrl || typeof avatarUrl !== "string") {
+      return res.status(400).json({ message: "URL do avatar é obrigatória" });
+    }
+
+    // Validate URL format (basic validation)
+    try {
+      new URL(avatarUrl);
+    } catch {
+      return res.status(400).json({ message: "URL do avatar inválida" });
+    }
+
+    // Update user avatar in database
+    const user = users.get(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
+    }
+
+    user.avatar = avatarUrl;
+    users.set(req.user.id, user);
+
+    // Return updated user data
+    const updatedUser: User = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role || "user",
+      avatar: user.avatar,
+    };
+
+    res.json({
+      message: "Avatar atualizado com sucesso",
+      user: updatedUser,
+    });
+  } catch (error) {
+    console.error("Update avatar error:", error);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+};
+
 // Extend Express Request type to include user
 declare global {
   namespace Express {
