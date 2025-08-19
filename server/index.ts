@@ -13,6 +13,7 @@ import {
   checkUsername,
   checkEmail,
   checkPhone,
+  updateUserAvatar,
 } from "./routes/auth";
 import {
   handleGetTopics,
