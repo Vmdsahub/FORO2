@@ -13,6 +13,7 @@ import {
   checkUsername,
   checkEmail,
   checkPhone,
+  updateUserAvatar,
 } from "./routes/auth";
 import {
   handleGetTopics,
@@ -101,6 +102,7 @@ export function createServer() {
   app.post("/api/auth/register", handleRegister);
   app.get("/api/auth/me", authenticateToken, handleMe);
   app.post("/api/auth/logout", authenticateToken, handleLogout);
+  app.put("/api/user/avatar", authenticateToken, updateUserAvatar);
 
   // Validation routes for real-time checking
   app.get("/api/auth/check-username/:username", checkUsername);

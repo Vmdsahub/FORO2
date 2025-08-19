@@ -22,7 +22,7 @@ export default function CommentUserProfile({
       <div
         className={`${avatarSize} rounded-full bg-black text-white flex items-center justify-center ${textSize} font-semibold flex-shrink-0 hover:bg-gray-800 transition-colors cursor-pointer overflow-hidden`}
       >
-        {userAvatar.startsWith("http") ? (
+        {userAvatar.startsWith("http") || userAvatar.startsWith("/") ? (
           <img
             src={userAvatar}
             alt={userName}

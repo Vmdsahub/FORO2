@@ -18,6 +18,7 @@ interface AuthContextType {
     captcha: string,
   ) => Promise<boolean>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -61,6 +62,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const refreshUser = async () => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      await fetchUserInfo(token);
     }
   };
 
@@ -228,7 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, isAdmin, login, register, logout }}
+      value={{ user, isLoading, isAdmin, login, register, logout, refreshUser }}
     >
       {children}
     </AuthContext.Provider>
