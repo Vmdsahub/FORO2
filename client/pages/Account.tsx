@@ -264,11 +264,8 @@ export default function Account() {
         setAvatarUrl(uploadResult.url);
 
         // Update the user context to reflect the change immediately
-        // This will need to be handled by refreshing user info from token
+        await refreshUser();
         toast.success("Foto do perfil atualizada!");
-
-        // Refresh page to update user context
-        window.location.reload();
       } else {
         toast.error("Erro ao salvar foto no perfil");
       }
