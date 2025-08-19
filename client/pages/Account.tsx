@@ -307,6 +307,7 @@ export default function Account() {
   };
 
   const getAvatarContent = () => {
+    // Prioridade 1: Avatar temporário durante upload
     if (avatarUrl) {
       return (
         <img
@@ -316,7 +317,9 @@ export default function Account() {
         />
       );
     }
-    if (user.avatar && user.avatar.startsWith("http")) {
+
+    // Prioridade 2: Avatar do usuário (URLs completas ou relativas)
+    if (user.avatar && (user.avatar.startsWith("http") || user.avatar.startsWith("/"))) {
       return (
         <img
           src={user.avatar}
@@ -325,6 +328,8 @@ export default function Account() {
         />
       );
     }
+
+    // Fallback: Iniciais do nome
     return user.name
       .split(" ")
       .map((n) => n[0])
