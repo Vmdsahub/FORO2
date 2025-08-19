@@ -25,7 +25,7 @@ interface Topic {
 }
 
 export default function Account() {
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const {
     availableThemes,
     userThemes,
