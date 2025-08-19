@@ -261,10 +261,13 @@ export default function Account() {
 
       if (updateResponse.ok) {
         const updateResult = await updateResponse.json();
-        setAvatarUrl(uploadResult.url);
 
         // Update the user context to reflect the change immediately
         await refreshUser();
+
+        // Clear local avatar state since user context now has the updated avatar
+        setAvatarUrl(null);
+
         toast.success("Foto do perfil atualizada!");
       } else {
         toast.error("Erro ao salvar foto no perfil");
