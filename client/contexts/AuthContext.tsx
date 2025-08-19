@@ -18,6 +18,7 @@ interface AuthContextType {
     captcha: string,
   ) => Promise<boolean>;
   logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
