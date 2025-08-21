@@ -38,6 +38,13 @@ export default function ImageModal({
     if (!isOpen) {
       setIsPlaying(false);
       setCurrentTime(0);
+      // Prevent event bubbling issues when modal closes
+      setTimeout(() => {
+        document.body.style.pointerEvents = "";
+      }, 100);
+    } else {
+      // Temporarily disable pointer events to prevent unwanted clicks
+      document.body.style.pointerEvents = "auto";
     }
   }, [isOpen]);
 
@@ -148,8 +155,13 @@ export default function ImageModal({
   if (!isOpen) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.target === e.currentTarget) {
-      onClose();
+      // Add a small delay to prevent event conflicts
+      setTimeout(() => {
+        onClose();
+      }, 10);
     }
   };
 
@@ -170,7 +182,11 @@ export default function ImageModal({
         >
           {/* Close button */}
           <Button
-            onClick={onClose}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
             variant="ghost"
             size="sm"
             className="absolute top-4 right-4 z-20 bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"

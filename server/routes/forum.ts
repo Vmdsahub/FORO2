@@ -23,13 +23,13 @@ const userStats: Map<string, { points: number; badges: string[] }> = new Map(); 
 const createTopicSchema = z.object({
   title: z.string().min(1).max(100),
   description: z.string().min(1).max(200),
-  content: z.string().min(1).max(2000),
+  content: z.string().min(1).max(50000), // Increased limit for rich content with HTML/images
   category: z.string().min(1),
   avatarUrl: z.string().optional(),
 });
 
 const createCommentSchema = z.object({
-  content: z.string().min(1).max(1000),
+  content: z.string().min(1).max(10000), // Increased limit for rich content
   parentId: z.string().optional(),
 });
 

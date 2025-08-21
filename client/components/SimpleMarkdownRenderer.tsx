@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import ImageModal from "@/components/ImageModal";
 
-interface MarkdownRendererProps {
+interface SimpleMarkdownRendererProps {
   content: string;
 }
 
-export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
+export default function SimpleMarkdownRenderer({
+  content,
+}: SimpleMarkdownRendererProps) {
   const [modalImage, setModalImage] = useState<{
     src: string;
     alt: string;
@@ -88,21 +90,6 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     console.log("❌ Closing modal");
     setModalImage(null);
   };
-
-  // Clean up any global functions that might conflict
-  useEffect(() => {
-    // Clear any existing global functions
-    delete (window as any).openImageModal;
-    delete (window as any).setupVideoListeners;
-    delete (window as any).debugVideoListeners;
-
-    return () => {
-      // Clean up on unmount
-      delete (window as any).openImageModal;
-      delete (window as any).setupVideoListeners;
-      delete (window as any).debugVideoListeners;
-    };
-  }, []);
 
   return (
     <>
