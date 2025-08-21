@@ -253,10 +253,84 @@ export default function EnhancedRichTextEditor({
   };
 
   const insertImageHtml = (src: string, alt: string) => {
-    // Image HTML for editor - NO click functionality, smaller size, basic styling
-    // Reduced size to 65% of original (260px instead of 400px) - NO click in editor
-    const img = `<div contenteditable="false" style="margin: 16px 0; text-align: center; user-select: none; clear: both;"><img src="${src}" alt="${alt}" style="max-width: 260px !important; width: 260px; height: auto; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; margin: 0 auto;" /></div><div><br></div>`;
-    insertHtmlAndRestoreCursor(img);
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      editor.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+
+    // Check if the previous element is an image container to group images
+    const range = selection.getRangeAt(0);
+    const currentNode = range.startContainer;
+    let parentNode = currentNode.nodeType === Node.TEXT_NODE ? currentNode.parentNode : currentNode;
+
+    // Find the last image container to check if we should group images
+    let lastImageContainer: HTMLElement | null = null;
+    let walker = document.createTreeWalker(
+      editor,
+      NodeFilter.SHOW_ELEMENT,
+      (node) => {
+        const element = node as HTMLElement;
+        return element.classList.contains('image-container') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      }
+    );
+
+    while (walker.nextNode()) {
+      lastImageContainer = walker.currentNode as HTMLElement;
+    }
+
+    // Check if cursor is right after an image container or if the last element is an image
+    const shouldGroupImages = lastImageContainer && (
+      parentNode === lastImageContainer ||
+      (parentNode && parentNode.previousElementSibling === lastImageContainer) ||
+      editor.lastElementChild === lastImageContainer
+    );
+
+    if (shouldGroupImages && lastImageContainer) {
+      // Add image to existing container (side by side)
+      const imageElement = `<img src="${src}" alt="${alt}" style="max-width: 180px; width: 180px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;" />`;
+      lastImageContainer.insertAdjacentHTML('beforeend', imageElement);
+    } else {
+      // Create new image container
+      const imageContainer = `<div class="image-container" contenteditable="false" style="margin: 8px 0; text-align: center; user-select: none; line-height: 0;"><img src="${src}" alt="${alt}" style="max-width: 180px; width: 180px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;" /></div>`;
+
+      // Insert without extra line break
+      execCommand("insertHTML", imageContainer);
+    }
+
+    // Position cursor after the image container for continued editing
+    setTimeout(() => {
+      const allImageContainers = editor.querySelectorAll('.image-container');
+      const lastContainer = allImageContainers[allImageContainers.length - 1];
+
+      if (lastContainer && selection) {
+        const range = document.createRange();
+        range.setStartAfter(lastContainer);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // Ensure there's a place to type after the image
+        if (!lastContainer.nextSibling || lastContainer.nextSibling.nodeType === Node.ELEMENT_NODE) {
+          const textNode = document.createTextNode('\u00A0'); // Non-breaking space
+          lastContainer.insertAdjacentElement('afterend', document.createElement('br'));
+          range.setStartAfter(lastContainer.nextSibling!);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      }
+
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const insertVideoHtml = (src: string, name: string) => {
@@ -447,6 +521,13 @@ export default function EnhancedRichTextEditor({
           word-break: break-word;
           hyphens: auto;
         }
+
+        /* Remove focus outline that creates strange border */
+        .rich-editor:focus {
+          outline: none !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
         
         /* Better text flow and line breaks */
         .rich-editor * {
@@ -468,9 +549,26 @@ export default function EnhancedRichTextEditor({
         .rich-editor div[contenteditable="false"] {
           position: relative;
           clear: both;
-          margin: 16px 0;
+          margin: 8px 0;
           word-wrap: normal;
           overflow-wrap: normal;
+        }
+
+        /* Styling for image containers */
+        .rich-editor .image-container {
+          margin: 8px 0 !important;
+          text-align: center;
+          line-height: 0;
+        }
+
+        .rich-editor .image-container img {
+          margin: 0 4px 4px 0;
+          display: inline-block;
+          vertical-align: top;
+        }
+
+        .rich-editor .image-container img:last-child {
+          margin-right: 0;
         }
         
         /* Ensure proper spacing and cursor placement */
@@ -488,8 +586,8 @@ export default function EnhancedRichTextEditor({
         
         /* Prevent content overflow and force smaller image size in editor */
         .rich-editor img {
-          max-width: 260px !important;
-          width: 260px !important;
+          max-width: 180px !important;
+          width: 180px !important;
           height: auto !important;
         }
 
