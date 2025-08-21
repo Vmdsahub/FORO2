@@ -363,9 +363,13 @@ export default function ImageModal({
                         background: "rgba(255, 255, 255, 0.15)",
                         backdropFilter: "blur(10px)",
                       }}
-                      title="Tela cheia"
+                      title={isFullscreenAvailable ? "Tela cheia" : "Abrir em nova aba"}
                     >
-                      <Maximize className="h-4 w-4" />
+                      {isFullscreenAvailable ? (
+                        <Maximize className="h-4 w-4" />
+                      ) : (
+                        <ExternalLink className="h-4 w-4" />
+                      )}
                     </Button>
 
                     {/* Download button */}
