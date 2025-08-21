@@ -68,6 +68,31 @@ function CommentItem({
     }
   };
 
+  const handleEdit = () => {
+    setEditContent(comment.content);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editContent.trim()) {
+      toast.error("Conteúdo não pode estar vazio");
+      return;
+    }
+
+    try {
+      await onEdit(comment.id, editContent.trim());
+      setIsEditing(false);
+      toast.success("Comentário atualizado!");
+    } catch (error) {
+      toast.error("Erro ao atualizar comentário");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditContent("");
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return (
