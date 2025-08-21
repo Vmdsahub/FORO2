@@ -135,10 +135,15 @@ export default function SecureUploadWidget({
               }
             } catch (parseError) {
               console.error("Failed to parse error response:", parseError);
-              // Use response text as fallback
-              const errorMessage =
-                xhr.responseText || `Upload failed with status ${xhr.status}`;
-              reject(new Error(errorMessage));
+              // Check for 413 Request Entity Too Large
+              if (xhr.status === 413) {
+                reject(new Error("Arquivo muito grande. O servidor rejeitou o upload. Tente um arquivo menor que 50MB."));
+              } else {
+                // Use response text as fallback
+                const errorMessage =
+                  xhr.responseText || `Upload failed with status ${xhr.status}`;
+                reject(new Error(errorMessage));
+              }
             }
           }
         };
