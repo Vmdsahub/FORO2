@@ -445,19 +445,22 @@ export default function EnhancedRichTextEditor({
     videoElement.muted = true;
     videoElement.preload = "metadata";
 
-    // Create glassmorphism play button overlay
+    // Create simple glassmorphism play button overlay
     const playOverlay = document.createElement('div');
-    playOverlay.style.cssText = "position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
+    playOverlay.style.cssText = "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
     playOverlay.innerHTML = `
-      <div style="width: 30px; height: 30px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3);">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(0,0,0,0.8)">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
-      </div>
+      <svg width="24" height="24" viewBox="0 0 24 24" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 4px; padding: 8px; border: 1px solid rgba(255,255,255,0.3);">
+        <path d="M8 5v14l11-7z" fill="rgba(0,0,0,0.8)"/>
+      </svg>
     `;
 
-    const clickHandler = isEditMode ? () => {} : () => window.openImageModal(src, name, true);
-    videoPreview.onclick = clickHandler;
+    if (!isEditMode) {
+      videoPreview.onclick = () => {
+        if (window.openImageModal) {
+          window.openImageModal(src, name, true);
+        }
+      };
+    }
 
     videoPreview.appendChild(videoElement);
     videoPreview.appendChild(playOverlay);
@@ -658,7 +661,7 @@ export default function EnhancedRichTextEditor({
         <SecureUploadWidget
           onSuccess={handleSecureUploadSuccess}
           onError={handleSecureUploadError}
-          buttonText="🔒 Upload"
+          buttonText="���� Upload"
           className="h-8"
           icon={
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
