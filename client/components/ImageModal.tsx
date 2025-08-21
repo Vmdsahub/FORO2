@@ -122,14 +122,18 @@ export default function ImageModal({
     const video = videoRef.current;
     if (!video) return;
 
-    if (video.requestFullscreen) {
-      video.requestFullscreen();
-    } else if ((video as any).mozRequestFullScreen) {
-      (video as any).mozRequestFullScreen();
-    } else if ((video as any).webkitRequestFullscreen) {
-      (video as any).webkitRequestFullscreen();
-    } else if ((video as any).msRequestFullscreen) {
-      (video as any).msRequestFullscreen();
+    try {
+      if (video.requestFullscreen) {
+        video.requestFullscreen().catch(console.error);
+      } else if ((video as any).mozRequestFullScreen) {
+        (video as any).mozRequestFullScreen();
+      } else if ((video as any).webkitRequestFullscreen) {
+        (video as any).webkitRequestFullscreen();
+      } else if ((video as any).msRequestFullscreen) {
+        (video as any).msRequestFullscreen();
+      }
+    } catch (error) {
+      console.error('Erro ao entrar em fullscreen:', error);
     }
   };
 
