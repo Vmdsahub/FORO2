@@ -91,6 +91,15 @@ export default function SimpleMarkdownRenderer({
     setModalImage(null);
   };
 
+  // Setup global function for compatibility
+  useEffect(() => {
+    if (!(window as any).openImageModal) {
+      (window as any).openImageModal = (src: string, alt: string, isVideo: boolean) => {
+        setModalImage({ src, alt, isVideo });
+      };
+    }
+  }, []);
+
   return (
     <>
       <div
