@@ -79,14 +79,23 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const srcMatch = match.match(/src="([^"]*)"/);
           const src = srcMatch ? srcMatch[1] : "";
 
-          // Create video preview thumbnail
-          return `<div class="video-preview" style="position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden; transition: all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onclick="(function(e) { console.log('Clicking video:', '${src}'); e.preventDefault(); e.stopPropagation(); if (window.openImageModal) { window.openImageModal('${src}', '', true); } else { console.log('openImageModal not found'); } })(event)">
-            <video style="width: 100%; height: 100%; object-fit: cover;" muted preload="metadata">
+          // Generate unique ID for this video element
+          const videoId = `video_${Math.random().toString(36).substr(2, 9)}`;
+
+          // Create video preview thumbnail with working click handler
+          return `<div
+            class="video-preview"
+            id="${videoId}"
+            style="position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden; transition: all 0.2s ease;"
+            onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'"
+            data-video-src="${src}">
+            <video style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" muted preload="metadata">
               <source src="${src}" type="video/mp4">
             </video>
-            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
               <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
-                <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
+                <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)"/>
               </svg>
             </div>
           </div>`;
