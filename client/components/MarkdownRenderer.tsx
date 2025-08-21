@@ -73,9 +73,26 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       });
     };
 
+    // Add global debug function for testing
+    (window as any).debugVideoListeners = () => {
+      const videos = document.querySelectorAll('.video-preview');
+      console.log('🔍 DEBUG: Total de vídeos encontrados:', videos.length);
+      videos.forEach((video, i) => {
+        console.log(`Vídeo ${i + 1}:`, {
+          element: video,
+          hasListener: video.hasAttribute('data-listener-added'),
+          dataSrc: video.getAttribute('data-video-src'),
+          videoChild: video.querySelector('video'),
+          videoSrc: video.querySelector('video')?.src
+        });
+      });
+      console.log('💡 Digite "setupVideoListeners()" para reconfigurar os listeners');
+    };
+
     return () => {
       delete (window as any).openImageModal;
       delete (window as any).setupVideoListeners;
+      delete (window as any).debugVideoListeners;
     };
   }, []);
 
