@@ -151,7 +151,34 @@ function CommentItem({
 
           {/* Conteúdo do comentário */}
           <div className="text-gray-700 mb-8 text-sm leading-relaxed pr-24 pt-6">
-            <MarkdownRenderer content={comment.content} />
+            {isEditing ? (
+              <div className="space-y-3">
+                <EnhancedRichTextEditor
+                  value={editContent}
+                  onChange={setEditContent}
+                  placeholder="Edite seu comentário..."
+                  isEditMode={true}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleSaveEdit}
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Salvar
+                  </Button>
+                  <Button
+                    onClick={handleCancelEdit}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <MarkdownRenderer content={comment.content} />
+            )}
           </div>
 
           {/* Ações no canto inferior direito */}
