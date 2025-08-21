@@ -12,8 +12,11 @@ export default function MediaClickHandler({
   useEffect(() => {
     // Function to setup click handlers for dynamically added media
     const setupMediaClickHandlers = () => {
+      console.log('🔍 MediaClickHandler: Setting up media click handlers...');
+
       // Find all images in image-container that don't have click handlers
       const images = document.querySelectorAll('.image-container img:not([data-click-handled])');
+      console.log(`🖼️ Found ${images.length} unhandled images`);
       images.forEach((img) => {
         const imageEl = img as HTMLImageElement;
         imageEl.setAttribute('data-click-handled', 'true');
@@ -36,6 +39,7 @@ export default function MediaClickHandler({
 
       // Find all videos in video-preview that don't have click handlers
       const videos = document.querySelectorAll('.video-preview:not([data-click-handled]), .image-container .video-preview:not([data-click-handled])');
+      console.log(`🎬 Found ${videos.length} unhandled videos`);
       videos.forEach((video) => {
         const videoEl = video as HTMLElement;
         videoEl.setAttribute('data-click-handled', 'true');
