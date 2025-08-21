@@ -144,7 +144,7 @@ function CommentItem({
             {formatDate(comment.createdAt)}
           </div>
 
-          {/* Conteúdo do comentário */}
+          {/* Conteúdo do coment��rio */}
           <div className="text-gray-700 mb-8 text-sm leading-relaxed pr-24 pt-6">
             {isEditing ? (
               <div className="space-y-3">
@@ -373,6 +373,39 @@ export default function SimpleCommentSystem({
       }
     } catch (error) {
       toast.error("Erro ao curtir");
+    }
+  };
+
+  // Editar comentário
+  const handleEditComment = async (commentId: string, content: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Atualizar o comentário no estado
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === commentId
+              ? { ...comment, content: data.comment.content }
+              : comment,
+          ),
+        );
+      } else {
+        const data = await response.json();
+        toast.error(data.message || "Erro ao editar comentário");
+        throw new Error(data.message);
+      }
+    } catch (error) {
+      console.error("Error editing comment:", error);
+      throw error;
     }
   };
 
