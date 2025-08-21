@@ -41,33 +41,6 @@ export default function ImageModal({
     if (!isOpen) {
       setIsPlaying(false);
       setCurrentTime(0);
-      // Prevent event bubbling issues when modal closes
-      setTimeout(() => {
-        document.body.style.pointerEvents = "";
-      }, 100);
-    } else {
-      // Temporarily disable pointer events to prevent unwanted clicks
-      document.body.style.pointerEvents = "auto";
-
-      // Check fullscreen availability
-      const checkFullscreenAvailability = async () => {
-        if (!document.fullscreenEnabled) {
-          setIsFullscreenAvailable(false);
-          return;
-        }
-
-        try {
-          const permissions = await navigator.permissions?.query?.({ name: 'fullscreen' as any });
-          if (permissions && permissions.state === 'denied') {
-            setIsFullscreenAvailable(false);
-          }
-        } catch {
-          // If permissions API is not available, assume fullscreen might work
-          setIsFullscreenAvailable(true);
-        }
-      };
-
-      checkFullscreenAvailability();
     }
   }, [isOpen]);
 
