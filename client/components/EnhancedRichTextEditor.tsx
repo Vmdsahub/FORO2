@@ -484,16 +484,8 @@ export default function EnhancedRichTextEditor({
       </svg>
     `;
 
-    if (!isEditMode) {
-      const clickHandler = () => {
-        console.log("Video clicked:", src, name);
-        if (typeof window !== "undefined" && (window as any).openImageModal) {
-          (window as any).openImageModal(src, name, true);
-        }
-      };
-      videoPreview.addEventListener("click", clickHandler);
-      playOverlay.addEventListener("click", clickHandler);
-    }
+    // Remove click handlers - they will be added by MarkdownRenderer
+    // This prevents duplicate listeners and ensures consistency
 
     videoPreview.appendChild(videoElement);
     videoPreview.appendChild(playOverlay);
