@@ -373,12 +373,20 @@
   }
 
   /* Video preview specific styles */
+  .video-preview {
+    line-height: 0 !important;
+  }
+
   .video-preview video {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
     display: block !important;
-    background: #000 !important;
+    background: #1a1a1a !important;
+    border-radius: 8px !important;
+    vertical-align: top !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* �� DARK THEME - Sistema Completo e Moderno */
