@@ -483,6 +483,27 @@ export default function EnhancedRichTextEditor({
 
         videoPreview.appendChild(videoElement);
         videoPreview.appendChild(playOverlay);
+
+        // Adicionar lixeira para excluir vídeo apenas em modo de edição
+        if (isEditMode) {
+          const deleteButton = document.createElement("button");
+          deleteButton.innerHTML = "🗑️";
+          deleteButton.title = "Excluir vídeo";
+          deleteButton.style.cssText =
+            "position: absolute; top: -8px; right: -8px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;";
+
+          deleteButton.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (confirm("Excluir este vídeo?")) {
+              videoPreview.remove();
+              handleInput();
+            }
+          };
+
+          videoPreview.appendChild(deleteButton);
+        }
+
         lastMediaContainer.appendChild(videoPreview);
 
         // Position cursor after the container
@@ -565,6 +586,27 @@ export default function EnhancedRichTextEditor({
 
     videoPreview.appendChild(videoElement);
     videoPreview.appendChild(playOverlay);
+
+    // Adicionar lixeira para excluir vídeo apenas em modo de edição
+    if (isEditMode) {
+      const deleteButton = document.createElement("button");
+      deleteButton.innerHTML = "🗑️";
+      deleteButton.title = "Excluir vídeo";
+      deleteButton.style.cssText =
+        "position: absolute; top: -8px; right: -8px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;";
+
+      deleteButton.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (confirm("Excluir este vídeo?")) {
+          videoPreview.remove();
+          handleInput();
+        }
+      };
+
+      videoPreview.appendChild(deleteButton);
+    }
+
     mediaContainer.appendChild(videoPreview);
 
     // Insert the container at the end of the editor
