@@ -313,7 +313,8 @@ export default function EnhancedRichTextEditor({
       if (selection) {
         // Create a div for text input after the image
         const textDiv = document.createElement("div");
-        textDiv.innerHTML = "<br>";
+        textDiv.innerHTML = "&nbsp;"; // Use non-breaking space instead of <br>
+        textDiv.style.minHeight = "1.2em"; // Ensure minimum height for text
         editor.appendChild(textDiv);
 
         const range = document.createRange();
@@ -321,11 +322,14 @@ export default function EnhancedRichTextEditor({
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
+
+        // Focus the text div specifically
+        textDiv.focus();
       }
 
       editor.focus();
       handleInput();
-    }, 10);
+    }, 50); // Increased timeout for better reliability
   };
 
   const insertVideoHtml = (src: string, name: string) => {
