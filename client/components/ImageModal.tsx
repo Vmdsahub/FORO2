@@ -129,47 +129,32 @@ export default function ImageModal({
     link.click();
   };
 
-  const handleFullscreen = async () => {
+  const handleFullscreen = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Check if fullscreen is available and allowed
-    if (!document.fullscreenEnabled) {
-      console.warn("Fullscreen não está disponível neste contexto");
-      toast.info("Abrindo vídeo em nova aba (fullscreen não disponível)");
-      // Fallback: open video in new tab
-      window.open(src, '_blank');
-      return;
-    }
-
     try {
-      // Check permissions before attempting fullscreen
-      const permissions = await navigator.permissions?.query?.({ name: 'fullscreen' as any });
-      if (permissions && permissions.state === 'denied') {
-        console.warn("Permissão de fullscreen negada");
-        toast.info("Abrindo vídeo em nova aba (permissão de fullscreen negada)");
-        window.open(src, '_blank');
-        return;
-      }
-
-      // Try different fullscreen APIs
+      // Force fullscreen with multiple browser support
       if (video.requestFullscreen) {
-        await video.requestFullscreen();
-      } else if ((video as any).mozRequestFullScreen) {
-        (video as any).mozRequestFullScreen();
+        video.requestFullscreen({ navigationUI: 'hide' });
       } else if ((video as any).webkitRequestFullscreen) {
         (video as any).webkitRequestFullscreen();
+      } else if ((video as any).mozRequestFullScreen) {
+        (video as any).mozRequestFullScreen();
       } else if ((video as any).msRequestFullscreen) {
         (video as any).msRequestFullscreen();
-      } else {
-        // Fallback if no fullscreen API is available
-        window.open(src, '_blank');
       }
     } catch (error) {
-      console.warn("Fullscreen bloqueado por política de segurança, abrindo em nova aba:", error);
-      toast.info("Abrindo vídeo em nova aba (fullscreen bloqueado)");
-      // Graceful fallback: open in new tab
-      window.open(src, '_blank');
+      console.log("Tentando fullscreen alternativo:", error);
+      // Try alternative fullscreen approach
+      try {
+        const element = video.parentElement || video;
+        if ((element as any).requestFullscreen) {
+          (element as any).requestFullscreen();
+        }
+      } catch (e) {
+        console.log("Fullscreen não disponível neste ambiente");
+      }
     }
   };
 
