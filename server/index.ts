@@ -22,6 +22,7 @@ import {
   handleCreateComment,
   handleLikeTopic,
   handleLikeComment,
+  handleEditTopic,
   handleDeleteTopic,
   handleDeleteComment,
   handleGetUserTopics,
