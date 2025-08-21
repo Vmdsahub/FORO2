@@ -37,7 +37,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
         // Skip if in edit mode
         if (element.getAttribute("data-edit-mode") === "true") {
-          console.log(`⏭️ Pulando vídeo ${index + 1} - modo de edição`);
+          console.log(`⏭�� Pulando vídeo ${index + 1} - modo de edição`);
           return;
         }
 
@@ -304,7 +304,14 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       {/* Modal de imagem/vídeo */}
       <ImageModal
         isOpen={!!modalImage}
-        onClose={() => setModalImage(null)}
+        onClose={() => {
+          isModalClosing = true;
+          setModalImage(null);
+          // Reset the closing flag after a delay
+          setTimeout(() => {
+            isModalClosing = false;
+          }, 300);
+        }}
         src={modalImage?.src || ""}
         alt={modalImage?.alt || ""}
         isVideo={modalImage?.isVideo || false}
