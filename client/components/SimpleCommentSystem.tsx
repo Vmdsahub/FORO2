@@ -205,6 +205,17 @@ function CommentItem({
                   Citar
                 </button>
 
+                {/* Botão Editar - apenas para o autor do comentário */}
+                {isCommentOwner && !isEditing && (
+                  <button
+                    onClick={handleEdit}
+                    className="text-xs text-blue-600 hover:text-blue-800 px-2 py-1 rounded transition-colors"
+                    title="Editar comentário"
+                  >
+                    Editar
+                  </button>
+                )}
+
                 {user.id !== comment.authorId && (
                   <button
                     onClick={() => onReport(comment)}
