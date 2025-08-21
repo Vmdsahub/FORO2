@@ -363,8 +363,8 @@ export default function EnhancedRichTextEditor({
     if (shouldGroupMedia && lastMediaContainer) {
       // Calculate how many media items are already in the container
       const existingMedia = lastMediaContainer.querySelectorAll('img, .video-preview');
-      const containerWidth = 600;
-      const mediaWidth = 120 + 8; // media width + margin
+      const containerWidth = 800;
+      const mediaWidth = 240 + 8; // media width + margin (for videos), images are still 120px
       const maxMediaPerRow = Math.floor(containerWidth / mediaWidth);
 
       if (existingMedia.length < maxMediaPerRow) {
