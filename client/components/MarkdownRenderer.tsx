@@ -30,10 +30,29 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   // Configurar event listeners para vídeos após o render
   useEffect(() => {
     const setupVideoListeners = () => {
-      const videoElements = document.querySelectorAll('.video-preview[data-video-src]');
+      // Find all video-preview elements (both from editor and markdown)
+      const videoElements = document.querySelectorAll('.video-preview');
 
       videoElements.forEach((element) => {
-        const videoSrc = element.getAttribute('data-video-src');
+        // Check if already has a listener
+        if (element.hasAttribute('data-listener-added')) {
+          return;
+        }
+
+        let videoSrc = '';
+
+        // Try to get video source from data attribute (markdown generated)
+        const dataSrc = element.getAttribute('data-video-src');
+        if (dataSrc) {
+          videoSrc = dataSrc;
+        } else {
+          // Try to get video source from child video element (editor generated)
+          const videoChild = element.querySelector('video');
+          if (videoChild && videoChild.src) {
+            videoSrc = videoChild.src;
+          }
+        }
+
         if (videoSrc) {
           const clickHandler = (e: Event) => {
             e.preventDefault();
@@ -42,16 +61,17 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             setModalImage({ src: videoSrc, alt: 'Vídeo', isVideo: true });
           };
 
-          // Remove existing listener to avoid duplicates
-          element.removeEventListener('click', clickHandler);
-          // Add new listener
+          // Add listener and mark as added
           element.addEventListener('click', clickHandler);
+          element.setAttribute('data-listener-added', 'true');
+
+          console.log('🎯 Event listener adicionado para vídeo:', videoSrc);
         }
       });
     };
 
     // Setup listeners after content changes
-    const timer = setTimeout(setupVideoListeners, 100);
+    const timer = setTimeout(setupVideoListeners, 200);
 
     return () => {
       clearTimeout(timer);
