@@ -342,7 +342,7 @@ export default function EnhancedRichTextEditor({
     // Only add delete button if in edit mode
     if (isEditMode) {
       const deleteButton = document.createElement("button");
-      deleteButton.innerHTML = "🗑️";
+      deleteButton.innerHTML = "🗑��";
       deleteButton.style.cssText =
         "position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.2s; pointer-events: auto;";
       deleteButton.title = "Remover imagem";
@@ -442,7 +442,7 @@ export default function EnhancedRichTextEditor({
     if (shouldGroupMedia && lastMediaContainer) {
       // Calculate how many media items are already in the container
       const existingMedia = lastMediaContainer.querySelectorAll(
-        "img, .video-preview",
+        ".image-wrapper, .video-wrapper",
       );
       const containerWidth = 800;
       const mediaWidth = 240 + 8; // media width + margin (for videos), images are still 120px
