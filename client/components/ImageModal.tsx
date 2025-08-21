@@ -33,7 +33,6 @@ export default function ImageModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
-  const [isFullscreenAvailable, setIsFullscreenAvailable] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -325,13 +324,9 @@ export default function ImageModal({
                         background: "rgba(255, 255, 255, 0.15)",
                         backdropFilter: "blur(10px)",
                       }}
-                      title={isFullscreenAvailable ? "Tela cheia" : "Abrir em nova aba"}
+                      title="Tela cheia"
                     >
-                      {isFullscreenAvailable ? (
-                        <Maximize className="h-4 w-4" />
-                      ) : (
-                        <ExternalLink className="h-4 w-4" />
-                      )}
+                      <Maximize className="h-4 w-4" />
                     </Button>
 
                     {/* Download button */}
