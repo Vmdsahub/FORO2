@@ -15,14 +15,11 @@ export function cleanContentForDisplay(content: string): string {
   // Remove delete buttons completely from published content
   cleanedContent = cleanedContent.replace(
     /<button[^>]*title="Remover [^"]*"[^>]*>🗑️<\/button>/g,
-    ""
+    "",
   );
 
   // Also remove any leftover button elements with trash emoji
-  cleanedContent = cleanedContent.replace(
-    /<button[^>]*>🗑️<\/button>/g,
-    ""
-  );
+  cleanedContent = cleanedContent.replace(/<button[^>]*>🗑️<\/button>/g, "");
 
   // Clean up any extra spaces left by removal
   cleanedContent = cleanedContent

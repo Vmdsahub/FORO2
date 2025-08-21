@@ -186,7 +186,15 @@ export default function TopicView() {
 
       if (response.ok) {
         const updatedTopic = await response.json();
-        setTopic((prev) => prev ? { ...prev, title: updatedTopic.title, content: updatedTopic.content } : null);
+        setTopic((prev) =>
+          prev
+            ? {
+                ...prev,
+                title: updatedTopic.title,
+                content: updatedTopic.content,
+              }
+            : null,
+        );
         setIsEditingTopic(false);
         toast.success("Tópico atualizado com sucesso!");
       } else {
@@ -338,10 +346,7 @@ export default function TopicView() {
                   >
                     Salvar Alterações
                   </Button>
-                  <Button
-                    onClick={handleCancelTopicEdit}
-                    variant="outline"
-                  >
+                  <Button onClick={handleCancelTopicEdit} variant="outline">
                     Cancelar
                   </Button>
                 </div>

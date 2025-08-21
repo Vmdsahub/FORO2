@@ -233,7 +233,8 @@ export default function EnhancedRichTextEditor({
 
     if (shouldGroupImages && lastImageContainer) {
       // Calculate how many images are already in the container
-      const existingImages = lastImageContainer.querySelectorAll(".image-wrapper");
+      const existingImages =
+        lastImageContainer.querySelectorAll(".image-wrapper");
       const containerWidth = 600; // increased container width
       const imageWidth = 120 + 8; // reduced image width + margin
       const maxImagesPerRow = Math.floor(containerWidth / imageWidth);
