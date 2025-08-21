@@ -166,6 +166,7 @@ export function createServer() {
   app.get("/api/comments/:topicId", optionalAuthenticateToken, getComments);
   app.post("/api/comments/:topicId", authenticateToken, createComment);
   app.post("/api/comments/:commentId/like", authenticateToken, likeComment);
+  app.put("/api/comments/:commentId", authenticateToken, editComment);
   app.delete("/api/comments/:commentId", authenticateToken, deleteComment);
 
   // Newsletter routes
