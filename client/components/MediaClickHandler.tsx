@@ -18,6 +18,13 @@ export default function MediaClickHandler({
       );
       images.forEach((img) => {
         const imageEl = img as HTMLImageElement;
+
+        // Skip if in edit mode (RichTextEditor)
+        if (imageEl.getAttribute("data-edit-mode") === "true" ||
+            imageEl.closest(".rich-editor")) {
+          return;
+        }
+
         imageEl.setAttribute("data-click-handled", "true");
         imageEl.style.cursor = "pointer";
 
