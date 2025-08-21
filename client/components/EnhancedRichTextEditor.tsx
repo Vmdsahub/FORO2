@@ -340,8 +340,27 @@ export default function EnhancedRichTextEditor({
       : `onclick="window.openImageModal('${src}', '${name}', true)" style="cursor: pointer;"`;
 
     // Reduced size to 65% (325px instead of 500px)
-    const video = `<div contenteditable="false" style="margin: 16px 0; text-align: center; user-select: none; clear: both;"><video controls ${clickHandler} style="max-width: 325px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; margin: 0 auto;"><source src="${src}" type="video/mp4"><source src="${src}" type="video/webm"><source src="${src}" type="video/mov">Seu navegador não suporta vídeo HTML5.</video></div>`;
-    insertHtmlAndRestoreCursor(video);
+    const video = `<div contenteditable="false" style="margin: 8px 0; text-align: center; user-select: none; clear: both;"><video controls ${clickHandler} style="max-width: 325px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; margin: 0 auto;"><source src="${src}" type="video/mp4"><source src="${src}" type="video/webm"><source src="${src}" type="video/mov">Seu navegador não suporta vídeo HTML5.</video></div>`;
+
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    // Insert video without extra line breaks
+    execCommand("insertHTML", video);
+
+    // Position cursor after video
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection) {
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const insertAudioHtml = (src: string, name: string, size?: number) => {
