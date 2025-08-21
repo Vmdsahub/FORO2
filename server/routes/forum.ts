@@ -33,6 +33,13 @@ const createCommentSchema = z.object({
   parentId: z.string().optional(),
 });
 
+const editTopicSchema = z.object({
+  title: z.string().min(1).max(100).optional(),
+  description: z.string().min(1).max(200).optional(),
+  content: z.string().min(1).max(50000).optional(),
+  category: z.string().min(1).optional(),
+});
+
 // Helper functions
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
