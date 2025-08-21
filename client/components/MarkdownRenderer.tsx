@@ -22,8 +22,44 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       setModalImage({ src, alt, isVideo });
     };
 
+    // Also setup global video listener function
+    (window as any).setupVideoListeners = () => {
+      const videoElements = document.querySelectorAll('.video-preview');
+
+      videoElements.forEach((element) => {
+        if (element.hasAttribute('data-listener-added')) {
+          return;
+        }
+
+        let videoSrc = '';
+        const dataSrc = element.getAttribute('data-video-src');
+        if (dataSrc) {
+          videoSrc = dataSrc;
+        } else {
+          const videoChild = element.querySelector('video');
+          if (videoChild && videoChild.src) {
+            videoSrc = videoChild.src;
+          }
+        }
+
+        if (videoSrc) {
+          const clickHandler = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🎬 Clicando no vídeo:', videoSrc);
+            setModalImage({ src: videoSrc, alt: 'Vídeo', isVideo: true });
+          };
+
+          element.addEventListener('click', clickHandler);
+          element.setAttribute('data-listener-added', 'true');
+          console.log('🎯 Event listener adicionado para vídeo:', videoSrc);
+        }
+      });
+    };
+
     return () => {
       delete (window as any).openImageModal;
+      delete (window as any).setupVideoListeners;
     };
   }, []);
 
