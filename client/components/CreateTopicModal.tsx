@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Topic } from "@shared/forum";
 import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
+import { cleanContentForSaving } from "@/utils/contentCleaner";
 
 interface ForumCategory {
   id: string;
@@ -129,6 +130,7 @@ export default function CreateTopicModal({
 
       const topicData = {
         ...formData,
+        content: cleanContentForSaving(formData.content), // Clean edit-mode attributes
         description: formData.title, // Use title as description for backend compatibility
         category: currentCategory.id,
         ...(avatarUrl && { avatarUrl }),

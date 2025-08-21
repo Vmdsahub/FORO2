@@ -387,15 +387,19 @@ export default function EnhancedRichTextEditor({
         const videoPreview = document.createElement("div");
         videoPreview.className = "video-preview";
         videoPreview.style.cssText =
-          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
 
-        // Create video element for thumbnail
+        // Create video thumbnail using canvas approach to eliminate black bar
         const videoElement = document.createElement("video");
         videoElement.src = src;
         videoElement.style.cssText =
-          "width: 100%; height: 100%; object-fit: cover;";
+          "width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;";
         videoElement.muted = true;
         videoElement.preload = "metadata";
+        videoElement.setAttribute("playsinline", "true");
+        if (isEditMode) {
+          videoElement.setAttribute("data-edit-mode", "true");
+        }
 
         // Create pure glassmorphism play button overlay
         const playOverlay = document.createElement("div");
@@ -467,15 +471,19 @@ export default function EnhancedRichTextEditor({
     const videoPreview = document.createElement("div");
     videoPreview.className = "video-preview";
     videoPreview.style.cssText =
-      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
 
-    // Create video element for thumbnail
+    // Create video thumbnail using improved approach to eliminate black bar
     const videoElement = document.createElement("video");
     videoElement.src = src;
     videoElement.style.cssText =
-      "width: 100%; height: 100%; object-fit: cover;";
+      "width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;";
     videoElement.muted = true;
     videoElement.preload = "metadata";
+    videoElement.setAttribute("playsinline", "true");
+    if (isEditMode) {
+      videoElement.setAttribute("data-edit-mode", "true");
+    }
 
     // Create pure glassmorphism play button overlay
     const playOverlay = document.createElement("div");
@@ -768,15 +776,34 @@ export default function EnhancedRichTextEditor({
           line-height: 1.7;
         }
 
-        /* Prevent videos from being draggable during editing */
-        .rich-editor .video-preview[data-edit-mode="true"] {
-          pointer-events: none;
-          user-select: none;
+        /* Prevent ALL interactions with media elements in rich editor */
+        .rich-editor .video-preview,
+        .rich-editor .image-container img,
+        .rich-editor .image-container {
+          pointer-events: none !important;
+          user-select: none !important;
+          cursor: default !important;
         }
 
-        /* Re-enable pointer events for play overlay in edit mode for better UX */
+        /* Specific styles for edit mode elements */
+        .rich-editor .video-preview[data-edit-mode="true"] {
+          pointer-events: none !important;
+          user-select: none !important;
+          cursor: default !important;
+        }
+
+        /* Disable ALL pointer events for video elements in edit mode */
+        .rich-editor .video-preview video,
+        .rich-editor .video-preview[data-edit-mode="true"] video {
+          pointer-events: none !important;
+          cursor: default !important;
+        }
+
+        /* Disable ALL pointer events for play overlay in edit mode */
+        .rich-editor .video-preview > div:last-child,
         .rich-editor .video-preview[data-edit-mode="true"] > div:last-child {
-          pointer-events: auto;
+          pointer-events: none !important;
+          cursor: default !important;
           opacity: 0.5;
         }
         
