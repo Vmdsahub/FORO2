@@ -29,7 +29,7 @@ const createTopicSchema = z.object({
 });
 
 const createCommentSchema = z.object({
-  content: z.string().min(1).max(1000),
+  content: z.string().min(1).max(10000), // Increased limit for rich content
   parentId: z.string().optional(),
 });
 
