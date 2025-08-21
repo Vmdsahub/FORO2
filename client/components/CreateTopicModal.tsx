@@ -130,6 +130,7 @@ export default function CreateTopicModal({
 
       const topicData = {
         ...formData,
+        content: cleanContentForSaving(formData.content), // Clean edit-mode attributes
         description: formData.title, // Use title as description for backend compatibility
         category: currentCategory.id,
         ...(avatarUrl && { avatarUrl }),
