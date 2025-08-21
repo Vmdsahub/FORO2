@@ -594,6 +594,7 @@ export default function SimpleCommentSystem({
               onDelete={handleDelete}
               onQuote={handleQuote}
               onReport={handleReport}
+              onEdit={handleEdit}
             />
           ))}
 
