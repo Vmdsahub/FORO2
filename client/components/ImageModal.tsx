@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { X, Download, Play, Pause, Volume2, VolumeX, Maximize } from "lucide-react";
 
 interface ImageModalProps {
   isOpen: boolean;
