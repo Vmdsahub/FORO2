@@ -19,8 +19,9 @@ export default function MediaClickHandler({
       images.forEach((img) => {
         const imageEl = img as HTMLImageElement;
 
-        // Skip if in edit mode (RichTextEditor)
-        if (imageEl.getAttribute("data-edit-mode") === "true") {
+        // Skip if already has click handler or is in edit mode
+        if (imageEl.getAttribute("data-click-handled") === "true" ||
+            imageEl.getAttribute("data-edit-mode") === "true") {
           return;
         }
 
