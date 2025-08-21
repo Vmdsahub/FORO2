@@ -779,6 +779,24 @@ export default function EnhancedRichTextEditor({
           border: none !important;
           box-shadow: none !important;
         }
+
+        /* Ensure text divs after media are properly editable */
+        .rich-editor div:not(.image-container):not(.video-preview) {
+          min-height: 1.2em;
+          line-height: 1.7;
+        }
+
+        /* Prevent videos from being draggable during editing */
+        .rich-editor .video-preview[data-edit-mode="true"] {
+          pointer-events: none;
+          user-select: none;
+        }
+
+        /* Re-enable pointer events for play overlay in edit mode for better UX */
+        .rich-editor .video-preview[data-edit-mode="true"] > div:last-child {
+          pointer-events: auto;
+          opacity: 0.5;
+        }
         
         /* Better text flow and line breaks */
         .rich-editor * {
