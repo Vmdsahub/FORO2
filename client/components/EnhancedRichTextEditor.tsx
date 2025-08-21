@@ -371,7 +371,7 @@ export default function EnhancedRichTextEditor({
         // Add video preview to existing container (side by side)
         const videoPreview = document.createElement('div');
         videoPreview.className = 'video-preview';
-        videoPreview.style.cssText = "position: relative; max-width: 120px; width: 120px; height: 90px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+        videoPreview.style.cssText = "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
 
         // Create video element for thumbnail
         const videoElement = document.createElement('video');
@@ -661,7 +661,7 @@ export default function EnhancedRichTextEditor({
         <SecureUploadWidget
           onSuccess={handleSecureUploadSuccess}
           onError={handleSecureUploadError}
-          buttonText="���� Upload"
+          buttonText="🔒 Upload"
           className="h-8"
           icon={
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
