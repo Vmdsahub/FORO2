@@ -73,8 +73,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     // Setup listeners after content changes
     const timer = setTimeout(setupVideoListeners, 200);
 
+    // Also setup a global interval to catch any new videos
+    const interval = setInterval(setupVideoListeners, 1000);
+
     return () => {
       clearTimeout(timer);
+      clearInterval(interval);
     };
   }, [content]);
 
