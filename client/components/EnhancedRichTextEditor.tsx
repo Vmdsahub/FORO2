@@ -320,30 +320,165 @@ export default function EnhancedRichTextEditor({
   };
 
   const insertVideoHtml = (src: string, name: string) => {
-    // Enhanced video HTML with conditional click behavior and better sizing
-    const clickHandler = isEditMode
-      ? 'style="cursor: default;"' // No click in edit mode
-      : `onclick="window.openImageModal('${src}', '${name}', true)" style="cursor: pointer;"`;
-
-    // Reduced size to 65% (325px instead of 500px)
-    const video = `<div contenteditable="false" style="margin: 8px 0; text-align: center; user-select: none; clear: both;"><video controls ${clickHandler} style="max-width: 325px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; margin: 0 auto;"><source src="${src}" type="video/mp4"><source src="${src}" type="video/webm"><source src="${src}" type="video/mov">Seu navegador não suporta vídeo HTML5.</video></div>`;
-
     const editor = editorRef.current;
     if (!editor) return;
 
-    // Insert video without extra line breaks
-    execCommand("insertHTML", video);
+    // Clean up empty divs at the end first
+    while (editor.lastElementChild &&
+           editor.lastElementChild.tagName === 'DIV' &&
+           editor.lastElementChild.innerHTML === '<br>') {
+      editor.removeChild(editor.lastElementChild);
+    }
 
-    // Position cursor after video
+    // Find the last media container (images or videos) in the editor
+    const mediaContainers = editor.querySelectorAll('.image-container, .video-container');
+    const lastMediaContainer = mediaContainers[mediaContainers.length - 1] as HTMLElement;
+
+    // Check if we should group with existing media
+    let shouldGroupMedia = false;
+
+    if (lastMediaContainer) {
+      // Find position of last media container
+      const children = Array.from(editor.children);
+      const lastMediaIndex = children.indexOf(lastMediaContainer);
+
+      if (lastMediaIndex !== -1) {
+        // Check all elements after the last media container
+        let hasContentAfterMedia = false;
+        for (let i = lastMediaIndex + 1; i < children.length; i++) {
+          const child = children[i];
+          if (child.tagName === 'DIV' && child.innerHTML === '<br>') {
+            continue;
+          }
+          if (child.textContent && child.textContent.trim()) {
+            hasContentAfterMedia = true;
+            break;
+          }
+        }
+
+        shouldGroupMedia = !hasContentAfterMedia;
+      }
+    }
+
+    if (shouldGroupMedia && lastMediaContainer) {
+      // Calculate how many media items are already in the container
+      const existingMedia = lastMediaContainer.querySelectorAll('img, .video-preview');
+      const containerWidth = 600;
+      const mediaWidth = 120 + 8; // media width + margin
+      const maxMediaPerRow = Math.floor(containerWidth / mediaWidth);
+
+      if (existingMedia.length < maxMediaPerRow) {
+        // Add video preview to existing container (side by side)
+        const videoPreview = document.createElement('div');
+        videoPreview.className = 'video-preview';
+        videoPreview.style.cssText = "position: relative; max-width: 120px; width: 120px; height: 90px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+
+        // Create video element for thumbnail
+        const videoElement = document.createElement('video');
+        videoElement.src = src;
+        videoElement.style.cssText = "width: 100%; height: 100%; object-fit: cover;";
+        videoElement.muted = true;
+        videoElement.preload = "metadata";
+
+        // Create glassmorphism play button overlay
+        const playOverlay = document.createElement('div');
+        playOverlay.style.cssText = "position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
+        playOverlay.innerHTML = `
+          <div style="width: 30px; height: 30px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(0,0,0,0.8)">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+        `;
+
+        const clickHandler = isEditMode ? () => {} : () => window.openImageModal(src, name, true);
+        videoPreview.onclick = clickHandler;
+
+        videoPreview.appendChild(videoElement);
+        videoPreview.appendChild(playOverlay);
+        lastMediaContainer.appendChild(videoPreview);
+
+        // Position cursor after the container
+        const selection = window.getSelection();
+        if (selection) {
+          const range = document.createRange();
+          range.setStartAfter(lastMediaContainer);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+
+        handleInput();
+        return;
+      }
+    }
+
+    // Create new media container
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      editor.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+
+    // Create the media container
+    const mediaContainer = document.createElement('div');
+    mediaContainer.className = 'image-container'; // Use same class for consistent styling
+    mediaContainer.contentEditable = 'false';
+    mediaContainer.style.cssText = 'margin: 8px 0; text-align: center; user-select: none; line-height: 0;';
+
+    // Create video preview
+    const videoPreview = document.createElement('div');
+    videoPreview.className = 'video-preview';
+    videoPreview.style.cssText = "position: relative; max-width: 120px; width: 120px; height: 90px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+
+    // Create video element for thumbnail
+    const videoElement = document.createElement('video');
+    videoElement.src = src;
+    videoElement.style.cssText = "width: 100%; height: 100%; object-fit: cover;";
+    videoElement.muted = true;
+    videoElement.preload = "metadata";
+
+    // Create glassmorphism play button overlay
+    const playOverlay = document.createElement('div');
+    playOverlay.style.cssText = "position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
+    playOverlay.innerHTML = `
+      <div style="width: 30px; height: 30px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3);">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(0,0,0,0.8)">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </div>
+    `;
+
+    const clickHandler = isEditMode ? () => {} : () => window.openImageModal(src, name, true);
+    videoPreview.onclick = clickHandler;
+
+    videoPreview.appendChild(videoElement);
+    videoPreview.appendChild(playOverlay);
+    mediaContainer.appendChild(videoPreview);
+
+    // Insert the container at the end of the editor
+    editor.appendChild(mediaContainer);
+
+    // Position cursor after the media container and ensure text input is visible
     setTimeout(() => {
       const selection = window.getSelection();
       if (selection) {
+        // Create a div for text input after the media
+        const textDiv = document.createElement('div');
+        textDiv.innerHTML = '<br>';
+        editor.appendChild(textDiv);
+
         const range = document.createRange();
-        range.selectNodeContents(editor);
-        range.collapse(false);
+        range.setStart(textDiv, 0);
+        range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
       }
+
       editor.focus();
       handleInput();
     }, 10);
