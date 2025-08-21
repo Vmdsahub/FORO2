@@ -36,6 +36,10 @@ const createCommentSchema = z.object({
   quotedCommentId: z.string().nullable().optional(),
 });
 
+const editCommentSchema = z.object({
+  content: z.string().min(1).max(10000),
+});
+
 // Helpers
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2);
