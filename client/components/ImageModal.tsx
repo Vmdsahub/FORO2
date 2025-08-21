@@ -148,6 +148,8 @@ export default function ImageModal({
   if (!isOpen) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.target === e.currentTarget) {
       onClose();
     }
