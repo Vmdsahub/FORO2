@@ -69,12 +69,9 @@ export default function CreateTopicModal({
         body: formData,
       });
 
-      // Read response body only once
-      const responseText = await response.text();
-
       if (response.ok) {
         try {
-          const result = JSON.parse(responseText);
+          const result = await response.json();
           return result.url;
         } catch (parseError) {
           console.error("Error parsing upload response:", parseError);
@@ -82,9 +79,17 @@ export default function CreateTopicModal({
           return null;
         }
       } else {
+        let errorMessage = "Erro ao fazer upload da imagem";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          // If JSON parsing fails, use text response
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
         console.error("Erro no upload:", response.status, response.statusText);
-        console.error("Response body:", responseText);
-        toast.error("Erro ao fazer upload da imagem");
+        toast.error(errorMessage);
       }
     } catch (error) {
       console.error("Erro ao fazer upload do avatar:", error);
