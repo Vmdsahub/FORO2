@@ -137,7 +137,11 @@ export default function SecureUploadWidget({
               console.error("Failed to parse error response:", parseError);
               // Check for 413 Request Entity Too Large
               if (xhr.status === 413) {
-                reject(new Error("Arquivo muito grande. O servidor rejeitou o upload. Tente um arquivo menor que 6MB."));
+                reject(
+                  new Error(
+                    "Arquivo muito grande. O servidor rejeitou o upload. Tente um arquivo menor que 6MB.",
+                  ),
+                );
               } else {
                 // Use response text as fallback
                 const errorMessage =
