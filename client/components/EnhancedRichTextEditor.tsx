@@ -655,16 +655,21 @@ export default function EnhancedRichTextEditor({
           margin: 8px 0 !important;
           text-align: center;
           line-height: 0;
+          max-width: 100%;
+          word-wrap: normal;
+          overflow-wrap: normal;
         }
 
         .rich-editor .image-container img {
-          margin: 0 4px 4px 0;
-          display: inline-block;
-          vertical-align: top;
+          margin: 0 4px 4px 0 !important;
+          display: inline-block !important;
+          vertical-align: top !important;
+          max-width: 180px !important;
+          width: 180px !important;
         }
 
         .rich-editor .image-container img:last-child {
-          margin-right: 0;
+          margin-right: 0 !important;
         }
         
         /* Ensure proper spacing and cursor placement */
