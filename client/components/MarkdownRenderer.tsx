@@ -25,9 +25,13 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     // Also setup global video listener function
     (window as any).setupVideoListeners = () => {
       const videoElements = document.querySelectorAll('.video-preview');
+      console.log('🔍 Procurando vídeos... Encontrados:', videoElements.length);
 
-      videoElements.forEach((element) => {
+      videoElements.forEach((element, index) => {
+        console.log(`🎯 Vídeo ${index + 1}:`, element);
+
         if (element.hasAttribute('data-listener-added')) {
+          console.log(`⚠️ Vídeo ${index + 1} já tem listener`);
           return;
         }
 
@@ -35,10 +39,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         const dataSrc = element.getAttribute('data-video-src');
         if (dataSrc) {
           videoSrc = dataSrc;
+          console.log(`📂 Vídeo ${index + 1} - src do data-attribute:`, videoSrc);
         } else {
           const videoChild = element.querySelector('video');
           if (videoChild && videoChild.src) {
             videoSrc = videoChild.src;
+            console.log(`📂 Vídeo ${index + 1} - src do elemento video:`, videoSrc);
           }
         }
 
@@ -46,13 +52,15 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const clickHandler = (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🎬 Clicando no vídeo:', videoSrc);
+            console.log('🎬 CLIQUE DETECTADO! Abrindo vídeo:', videoSrc);
             setModalImage({ src: videoSrc, alt: 'Vídeo', isVideo: true });
           };
 
           element.addEventListener('click', clickHandler);
           element.setAttribute('data-listener-added', 'true');
-          console.log('🎯 Event listener adicionado para vídeo:', videoSrc);
+          console.log(`✅ Event listener adicionado para vídeo ${index + 1}:`, videoSrc);
+        } else {
+          console.log(`❌ Vídeo ${index + 1} - não foi possível encontrar src`);
         }
       });
     };
