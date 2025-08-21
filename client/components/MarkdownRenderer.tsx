@@ -66,8 +66,8 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const altMatch = match.match(/alt="([^"]*)"/);
           const alt = altMatch ? altMatch[1] : "";
 
-          // Replace with clickable image with rounded borders
-          return `<img src="${src}" alt="${alt}" style="max-width: 260px; width: 260px; height: auto; border-radius: 16px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'" onclick="window.openImageModal('${src}', '${alt}', false)" loading="lazy" />`;
+          // Replace with clickable image with rounded borders - matching editor size
+          return `<img src="${src}" alt="${alt}" style="max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onclick="window.openImageModal('${src}', '${alt}', false)" loading="lazy" />`;
         },
       );
 
