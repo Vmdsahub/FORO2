@@ -5,6 +5,9 @@ interface MarkdownRendererProps {
   content: string;
 }
 
+// Global variable to prevent modal conflicts
+let isModalClosing = false;
+
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const [modalImage, setModalImage] = useState<{
     src: string;
