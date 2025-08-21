@@ -101,7 +101,7 @@ export class AdvancedFileValidator {
       if (stats.size > this.config.maxFileSize) {
         result.isValid = false;
         result.reasons.push(
-          `File too large: ${stats.size} bytes (max: ${this.config.maxFileSize})`,
+          `Arquivo muito grande: ${Math.round(stats.size / (1024 * 1024))}MB (máximo: ${Math.round(this.config.maxFileSize / (1024 * 1024))}MB)`,
         );
       }
 
@@ -474,7 +474,7 @@ export class AdvancedFileValidator {
 
 // Security configuration - More permissive with advanced analysis
 export const SECURITY_CONFIG: SecurityConfig = {
-  maxFileSize: 1024 * 1024 * 1024, // 1GB (similar to Reddit)
+  maxFileSize: 50 * 1024 * 1024, // 50MB (nginx compatible)
   allowedMimeTypes: [
     "image/jpeg",
     "image/png",
