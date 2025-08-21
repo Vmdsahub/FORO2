@@ -378,6 +378,29 @@ export default function TopicView() {
                 </button>
               )}
 
+              {/* Botão de editar - apenas para o autor */}
+              {user && user.id === topic.authorId && !isEditingTopic && (
+                <button
+                  onClick={handleEditTopic}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                  title="Editar tópico"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  Editar
+                </button>
+              )}
+
               {/* Botão de denúncia */}
               {user && user.id !== topic.authorId && (
                 <button
