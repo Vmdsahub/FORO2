@@ -352,7 +352,9 @@
   }
 
   .image-container .video-preview {
-    height: 90px !important;
+    height: 180px !important;
+    max-width: 240px !important;
+    width: 240px !important;
     position: relative !important;
     background: #000 !important;
     overflow: hidden !important;
