@@ -43,7 +43,7 @@ export default function SecureUploadWidget({
   onSuccess,
   onError,
   accept = ".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.zip,.rar,.mp4,.mp3,.txt,.csv",
-  maxSize = 50 * 1024 * 1024, // 50MB - Match server configuration
+  maxSize = 6 * 1024 * 1024, // 6MB - Netlify Functions maximum
   className = "",
   buttonText = "Upload Seguro",
   icon,
