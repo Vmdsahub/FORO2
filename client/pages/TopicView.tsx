@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import SimpleMarkdownRenderer from "@/components/SimpleMarkdownRenderer";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 import SimpleCommentSystem from "@/components/SimpleCommentSystem";
 import UserPointsBadge from "@/components/UserPointsBadge";
 import UserHoverCard from "@/components/UserHoverCard";
