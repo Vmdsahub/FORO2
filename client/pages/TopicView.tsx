@@ -150,6 +150,60 @@ export default function TopicView() {
     }
   };
 
+  const handleEditTopic = () => {
+    if (!topic || !user || user.id !== topic.authorId) return;
+
+    setEditTopicTitle(topic.title);
+    setEditTopicContent(topic.content);
+    setIsEditingTopic(true);
+  };
+
+  const handleSaveTopicEdit = async () => {
+    if (!topic || !user || user.id !== topic.authorId) return;
+
+    if (!editTopicTitle.trim()) {
+      toast.error("Título não pode estar vazio");
+      return;
+    }
+
+    if (!editTopicContent.trim()) {
+      toast.error("Conteúdo não pode estar vazio");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/topics/${topicId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({
+          title: editTopicTitle.trim(),
+          content: editTopicContent.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        const updatedTopic = await response.json();
+        setTopic((prev) => prev ? { ...prev, title: updatedTopic.title, content: updatedTopic.content } : null);
+        setIsEditingTopic(false);
+        toast.success("Tópico atualizado com sucesso!");
+      } else {
+        toast.error("Erro ao atualizar tópico");
+      }
+    } catch (error) {
+      console.error("Error updating topic:", error);
+      toast.error("Erro ao atualizar tópico");
+    }
+  };
+
+  const handleCancelTopicEdit = () => {
+    setIsEditingTopic(false);
+    setEditTopicTitle("");
+    setEditTopicContent("");
+  };
+
   const handleSaveTopic = () => {
     if (!user || !topic) {
       toast.error("Faça login para salvar tópicos");
