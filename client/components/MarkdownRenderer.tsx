@@ -55,7 +55,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           }
         }
 
-        if (videoSrc) {
+        if (videoSrc && !element.hasAttribute("data-listener-added")) {
           // Create a fresh click handler for each video
           const clickHandler = (e: Event) => {
             e.preventDefault();
@@ -64,9 +64,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             setModalImage({ src: videoSrc, alt: "Vídeo", isVideo: true });
           };
 
-          // Remove any existing listeners first
-          element.removeEventListener("click", clickHandler);
-          // Add new listener
+          // Add listener only once
           element.addEventListener("click", clickHandler);
           element.setAttribute("data-listener-added", "true");
           console.log(
@@ -220,7 +218,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       return processedHtml;
     }
 
-    // Se contém elementos de mídia, força como HTML
+    // Se contém elementos de m��dia, força como HTML
     if (
       content.includes("🖼️") ||
       content.includes("🎬") ||
