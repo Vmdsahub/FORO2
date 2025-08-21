@@ -81,7 +81,7 @@ function CommentItem({
             Citando @{comment.quotedComment.author}:
           </div>
           <div className="text-sm text-gray-700 italic line-clamp-3">
-            <SimpleMarkdownRenderer content={comment.quotedComment.content} />
+            <MarkdownRenderer content={comment.quotedComment.content} />
           </div>
         </div>
       )}
