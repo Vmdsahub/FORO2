@@ -158,7 +158,10 @@ export default function ImageModal({
     e.preventDefault();
     e.stopPropagation();
     if (e.target === e.currentTarget) {
-      onClose();
+      // Add a small delay to prevent event conflicts
+      setTimeout(() => {
+        onClose();
+      }, 10);
     }
   };
 
