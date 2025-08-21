@@ -71,6 +71,30 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         },
       );
 
+      // Convert video previews to clickable thumbnails
+      processedHtml = processedHtml.replace(
+        /<div class="video-preview"[^>]*>(.*?)<\/div>/g,
+        (match) => {
+          // Extract video source from the video element
+          const srcMatch = match.match(/src="([^"]*)"/);
+          const src = srcMatch ? srcMatch[1] : "";
+
+          // Create video preview thumbnail
+          return `<div class="video-preview" style="position: relative; max-width: 120px; width: 120px; height: 90px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden; transition: all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onclick="window.openImageModal('${src}', '', true)">
+            <video style="width: 100%; height: 100%; object-fit: cover;" muted preload="metadata">
+              <source src="${src}" type="video/mp4">
+            </video>
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;">
+              <div style="width: 30px; height: 30px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.3);">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="rgba(0,0,0,0.8)">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
+          </div>`;
+        },
+      );
+
       return processedHtml;
     }
 
