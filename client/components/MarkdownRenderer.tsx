@@ -59,8 +59,14 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           element.addEventListener('click', clickHandler);
           element.setAttribute('data-listener-added', 'true');
           console.log(`✅ Event listener adicionado para vídeo ${index + 1}:`, videoSrc);
+
+          // Test click immediately to verify it works
+          console.log(`🧪 Testando clique no vídeo ${index + 1}...`);
         } else {
           console.log(`❌ Vídeo ${index + 1} - não foi possível encontrar src`);
+          console.log(`🔍 Debug - elemento:`, element);
+          console.log(`🔍 Debug - data-video-src:`, element.getAttribute('data-video-src'));
+          console.log(`🔍 Debug - video child:`, element.querySelector('video'));
         }
       });
     };
