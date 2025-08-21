@@ -7,6 +7,7 @@ import { NewsletterTopic, WeeklyNewsletter } from "@/utils/weekSystem";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import MediaClickHandler from "@/components/MediaClickHandler";
 import GlassmorphismBackground from "@/components/GlassmorphismBackground";
 import TopicView from "@/pages/TopicView";
 import Index from "@/pages/Index";
