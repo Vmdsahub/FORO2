@@ -58,6 +58,26 @@ function CommentItem({
   const isCommentOwner = user?.id === comment.authorId;
   const canDelete = isAdmin || isTopicOwner || isCommentOwner;
 
+  const handleEdit = () => {
+    setEditContent(comment.content);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await onEdit(comment.id, editContent);
+      setIsEditing(false);
+      toast.success("Comentário editado!");
+    } catch (error) {
+      toast.error("Erro ao editar");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditContent(comment.content);
+    setIsEditing(false);
+  };
+
   const handleDelete = async () => {
     if (!confirm("Confirma a exclusão?")) return;
     try {
