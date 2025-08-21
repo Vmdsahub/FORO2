@@ -62,10 +62,19 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         }
 
         if (videoSrc && !element.hasAttribute("data-listener-added")) {
-          // Create a fresh click handler for each video
+          // Create a fresh click handler for each video with debounce protection
+          let clickTimeout: NodeJS.Timeout | null = null;
           const clickHandler = (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
+
+            // Debounce protection - prevent rapid clicks
+            if (clickTimeout) return;
+
+            clickTimeout = setTimeout(() => {
+              clickTimeout = null;
+            }, 500);
+
             console.log("🎬 CLIQUE DETECTADO! Abrindo vídeo:", videoSrc);
             setModalImage({ src: videoSrc, alt: "Vídeo", isVideo: true });
           };
