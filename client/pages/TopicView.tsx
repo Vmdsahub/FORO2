@@ -388,35 +388,58 @@ export default function TopicView() {
             {/* Ações à direita */}
             <div className="flex items-center gap-3">
               {user && (
-                <button
-                  onClick={handleSaveTopic}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
-                    savedTopicIds.includes(topic.id)
-                      ? "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
-                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
-                  }`}
-                  title={
-                    savedTopicIds.includes(topic.id)
-                      ? "Remover dos salvos"
-                      : "Salvar tópico"
-                  }
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill={
-                      savedTopicIds.includes(topic.id) ? "currentColor" : "none"
+                <>
+                  <button
+                    onClick={handleSaveTopic}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+                      savedTopicIds.includes(topic.id)
+                        ? "bg-yellow-50 text-yellow-600 hover:bg-yellow-100"
+                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                    }`}
+                    title={
+                      savedTopicIds.includes(topic.id)
+                        ? "Remover dos salvos"
+                        : "Salvar tópico"
                     }
-                    stroke="currentColor"
                   >
-                    <path
-                      d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"
-                      strokeWidth="2"
-                    />
-                  </svg>
-                  {savedTopicIds.includes(topic.id) ? "Salvo" : "Salvar"}
-                </button>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill={
+                        savedTopicIds.includes(topic.id) ? "currentColor" : "none"
+                      }
+                      stroke="currentColor"
+                    >
+                      <path
+                        d="M17 3H7c-1.1 0-2 .9-2 2v16l7-3 7 3V5c0-1.1-.9-2-2-2z"
+                        strokeWidth="2"
+                      />
+                    </svg>
+                    {savedTopicIds.includes(topic.id) ? "Salvo" : "Salvar"}
+                  </button>
+
+                  {/* Botão Editar - apenas para o autor do tópico */}
+                  {user.id === topic.authorId && !isEditing && (
+                    <button
+                      onClick={handleEditTopic}
+                      className="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                      title="Editar tópico"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path d="M12 20h9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      Editar
+                    </button>
+                  )}
+                </>
               )}
 
               {/* Botão de denúncia */}
