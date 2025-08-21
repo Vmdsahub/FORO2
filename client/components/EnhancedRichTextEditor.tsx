@@ -191,28 +191,30 @@ export default function EnhancedRichTextEditor({
     const imageContainers = editor.querySelectorAll('.image-container');
     const lastImageContainer = imageContainers[imageContainers.length - 1] as HTMLElement;
 
-    // Check if we should group images (if last element is an image container and no text between cursor and image)
+    // Check if we should group images
     let shouldGroupImages = false;
 
     if (lastImageContainer) {
-      const selection = window.getSelection();
-      if (selection && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const currentPosition = range.startContainer;
-
-        // Check if cursor is right after the last image container or in empty space after it
-        const isAfterLastImage = lastImageContainer === editor.lastElementChild ||
-          (lastImageContainer.nextSibling &&
-           (lastImageContainer.nextSibling.nodeType === Node.TEXT_NODE &&
-            lastImageContainer.nextSibling.textContent?.trim() === '') ||
-           (lastImageContainer.nextSibling.nodeType === Node.ELEMENT_NODE &&
-            (lastImageContainer.nextSibling as HTMLElement).tagName === 'BR'));
-
-        shouldGroupImages = isAfterLastImage;
-      } else {
-        // If no selection, check if last element is image container
-        shouldGroupImages = lastImageContainer === editor.lastElementChild;
+      // Check if the last image container is the last meaningful element
+      // or if there's only empty content (BR tags, empty text) after it
+      let lastMeaningfulElement = null;
+      for (let i = editor.children.length - 1; i >= 0; i--) {
+        const child = editor.children[i];
+        if (child === lastImageContainer) {
+          lastMeaningfulElement = lastImageContainer;
+          break;
+        }
+        // Skip empty divs with just BR
+        if (child.tagName === 'DIV' && child.innerHTML === '<br>') {
+          continue;
+        }
+        // If we find meaningful content after the image, don't group
+        if (child.textContent?.trim()) {
+          break;
+        }
       }
+
+      shouldGroupImages = lastMeaningfulElement === lastImageContainer;
     }
 
     if (shouldGroupImages && lastImageContainer) {
