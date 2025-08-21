@@ -514,16 +514,7 @@ export default function EnhancedRichTextEditor({
     // Insert the container at the end of the editor
     editor.appendChild(mediaContainer);
 
-    // Call global video setup function after adding the video to DOM
-    setTimeout(() => {
-      if (
-        typeof window !== "undefined" &&
-        (window as any).setupVideoListeners
-      ) {
-        console.log("🎬 Chamando setupVideoListeners após adicionar vídeo");
-        (window as any).setupVideoListeners();
-      }
-    }, 200);
+    // No need for global video setup in edit mode
 
     // Position cursor after the media container and ensure text input is visible
     setTimeout(() => {
