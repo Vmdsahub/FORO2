@@ -8,6 +8,7 @@ import {
   Volume2,
   VolumeX,
   Maximize,
+  ExternalLink,
 } from "lucide-react";
 
 interface ImageModalProps {
