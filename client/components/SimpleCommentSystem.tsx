@@ -451,7 +451,7 @@ export default function SimpleCommentSystem({
                 </button>
               </div>
               <div className="text-sm text-gray-700 italic line-clamp-2">
-                <SimpleMarkdownRenderer content={quotedComment.content} />
+                <MarkdownRenderer content={quotedComment.content} />
               </div>
             </div>
           )}
@@ -460,7 +460,7 @@ export default function SimpleCommentSystem({
             <EnhancedRichTextEditor
               value={newComment}
               onChange={setNewComment}
-              placeholder="Escreva seu comentário... Código será detectado automaticamente! Use as ferramentas para cores, upload de arquivos e mais."
+              placeholder="Escreva seu comentário... Código ser�� detectado automaticamente! Use as ferramentas para cores, upload de arquivos e mais."
             />
             <div className="flex items-center justify-between mt-3">
               <span className="text-xs text-gray-500">
