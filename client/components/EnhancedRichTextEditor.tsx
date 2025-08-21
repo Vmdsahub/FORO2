@@ -218,8 +218,8 @@ export default function EnhancedRichTextEditor({
     if (shouldGroupImages && lastImageContainer) {
       // Calculate how many images are already in the container
       const existingImages = lastImageContainer.querySelectorAll('img');
-      const containerWidth = 400; // approximate container width
-      const imageWidth = 180 + 8; // image width + margin
+      const containerWidth = 600; // increased container width
+      const imageWidth = 120 + 8; // reduced image width + margin
       const maxImagesPerRow = Math.floor(containerWidth / imageWidth);
 
       if (existingImages.length < maxImagesPerRow) {
@@ -672,7 +672,7 @@ export default function EnhancedRichTextEditor({
             {isEditMode ? (
               <span className="text-orange-600">
                 {" "}
-                Expansão de m��dia disponível após publicar.
+                Expansão de mídia disponível após publicar.
               </span>
             ) : (
               <span className="text-blue-600">
