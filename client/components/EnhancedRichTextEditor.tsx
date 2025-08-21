@@ -237,7 +237,33 @@ export default function EnhancedRichTextEditor({
         imageElement.alt = alt;
         imageElement.style.cssText =
           "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
-        lastImageContainer.appendChild(imageElement);
+
+        // Adicionar lixeira para excluir imagem apenas em modo de edição
+        if (isEditMode) {
+          const imageWrapper = document.createElement("div");
+          imageWrapper.style.cssText = "display: inline-block; position: relative; margin: 0 8px 8px 0;";
+
+          const deleteButton = document.createElement("button");
+          deleteButton.innerHTML = "🗑️";
+          deleteButton.title = "Excluir imagem";
+          deleteButton.style.cssText =
+            "position: absolute; top: -8px; right: -8px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;";
+
+          deleteButton.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (confirm("Excluir esta imagem?")) {
+              imageWrapper.remove();
+              handleInput();
+            }
+          };
+
+          imageWrapper.appendChild(imageElement);
+          imageWrapper.appendChild(deleteButton);
+          lastImageContainer.appendChild(imageWrapper);
+        } else {
+          lastImageContainer.appendChild(imageElement);
+        }
 
         // Position cursor after the container but don't create extra div
         const selection = window.getSelection();
@@ -296,7 +322,32 @@ export default function EnhancedRichTextEditor({
     imageElement.style.cssText =
       "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
 
-    imageContainer.appendChild(imageElement);
+    // Adicionar lixeira para excluir imagem apenas em modo de edição
+    if (isEditMode) {
+      const imageWrapper = document.createElement("div");
+      imageWrapper.style.cssText = "display: inline-block; position: relative; margin: 0 8px 8px 0;";
+
+      const deleteButton = document.createElement("button");
+      deleteButton.innerHTML = "🗑️";
+      deleteButton.title = "Excluir imagem";
+      deleteButton.style.cssText =
+        "position: absolute; top: -8px; right: -8px; background: red; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center;";
+
+      deleteButton.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (confirm("Excluir esta imagem?")) {
+          imageWrapper.remove();
+          handleInput();
+        }
+      };
+
+      imageWrapper.appendChild(imageElement);
+      imageWrapper.appendChild(deleteButton);
+      imageContainer.appendChild(imageWrapper);
+    } else {
+      imageContainer.appendChild(imageElement);
+    }
 
     // Insert the container at the end of the editor
     editor.appendChild(imageContainer);
