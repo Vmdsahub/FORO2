@@ -370,7 +370,7 @@ export default function SimpleCommentSystem({
           Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify({
-          content: newComment,
+          content: cleanContentForSaving(newComment), // Clean edit-mode attributes
           quotedCommentId: quotedComment?.id || null,
         }),
       });
