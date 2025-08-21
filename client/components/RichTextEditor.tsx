@@ -165,8 +165,8 @@ export default function RichTextEditor({
       return;
     }
 
-    if (file.size > 500 * 1024 * 1024) {
-      toast.error("Vídeo muito grande. Máximo 500MB");
+    if (file.size > 6 * 1024 * 1024) {
+      toast.error("Vídeo muito grande. Máximo 6MB");
       return;
     }
 

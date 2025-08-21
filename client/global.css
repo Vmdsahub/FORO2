@@ -334,7 +334,8 @@
   }
 
   .image-container img,
-  .image-container .video-preview {
+  .image-container .video-preview,
+  .video-preview {
     margin: 0 4px 4px 0 !important;
     display: inline-block !important;
     vertical-align: top !important;
@@ -372,13 +373,23 @@
   }
 
   /* Video preview specific styles */
+  .video-preview {
+    line-height: 0 !important;
+  }
+
   .video-preview video {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
+    display: block !important;
+    background: #1a1a1a !important;
+    border-radius: 8px !important;
+    vertical-align: top !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* 🌙 DARK THEME - Sistema Completo e Moderno */
+  /* �� DARK THEME - Sistema Completo e Moderno */
   .theme-dark {
     /* === PALETA DE CORES BASE === */
     --dark-bg-primary: #0a0b0f; /* Fundo principal - quase preto */

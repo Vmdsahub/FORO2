@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import UserHoverCard from "@/components/UserHoverCard";
 import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
+import { cleanContentForSaving } from "@/utils/contentCleaner";
 import ReportModal from "@/components/ReportModal";
 
 interface Comment {
@@ -225,7 +226,7 @@ export default function SimpleCommentSystem({
       const response = await fetch(`/api/comments/${topicId}`, { headers });
       if (response.ok) {
         const data = await response.json();
-        // Filtra apenas comentários raiz (sem parentId) e ordena por data
+        // Filtra apenas coment��rios raiz (sem parentId) e ordena por data
         const rootComments = data.comments
           .filter((comment: any) => !comment.parentId)
           .sort(
@@ -369,7 +370,7 @@ export default function SimpleCommentSystem({
           Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
         },
         body: JSON.stringify({
-          content: newComment,
+          content: cleanContentForSaving(newComment), // Clean edit-mode attributes
           quotedCommentId: quotedComment?.id || null,
         }),
       });
@@ -460,7 +461,7 @@ export default function SimpleCommentSystem({
             <EnhancedRichTextEditor
               value={newComment}
               onChange={setNewComment}
-              placeholder="Escreva seu comentário... Código será detectado automaticamente! Use as ferramentas para cores, upload de arquivos e mais."
+              placeholder="Escreva seu comentário... Código ser�� detectado automaticamente! Use as ferramentas para cores, upload de arquivos e mais."
             />
             <div className="flex items-center justify-between mt-3">
               <span className="text-xs text-gray-500">

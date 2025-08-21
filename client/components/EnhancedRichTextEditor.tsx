@@ -65,29 +65,23 @@ export default function EnhancedRichTextEditor({
 
   // Configure global functions - conditional based on edit mode
   useEffect(() => {
-    (window as any).openImageModal = (
-      src: string,
-      alt: string,
-      isVideo: boolean,
-    ) => {
-      // Only allow media expansion when NOT in edit mode (i.e., when content is already posted)
-      if (!isEditMode) {
-        setModalImage({ src, alt, isVideo });
-      }
-    };
-
-    (window as any).downloadFile = (url: string, filename: string) => {
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
+    // Only setup modal and download functions in edit mode
+    if (isEditMode) {
+      (window as any).downloadFile = (url: string, filename: string) => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+    }
 
     return () => {
-      delete (window as any).openImageModal;
-      delete (window as any).downloadFile;
+      // Clean up only the functions we created
+      if (isEditMode) {
+        delete (window as any).downloadFile;
+      }
     };
   }, [isEditMode]);
 
@@ -313,7 +307,8 @@ export default function EnhancedRichTextEditor({
       if (selection) {
         // Create a div for text input after the image
         const textDiv = document.createElement("div");
-        textDiv.innerHTML = "<br>";
+        textDiv.innerHTML = "&nbsp;"; // Use non-breaking space instead of <br>
+        textDiv.style.minHeight = "1.2em"; // Ensure minimum height for text
         editor.appendChild(textDiv);
 
         const range = document.createRange();
@@ -321,11 +316,14 @@ export default function EnhancedRichTextEditor({
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
+
+        // Focus the text div specifically
+        textDiv.focus();
       }
 
       editor.focus();
       handleInput();
-    }, 10);
+    }, 50); // Increased timeout for better reliability
   };
 
   const insertVideoHtml = (src: string, name: string) => {
@@ -389,15 +387,19 @@ export default function EnhancedRichTextEditor({
         const videoPreview = document.createElement("div");
         videoPreview.className = "video-preview";
         videoPreview.style.cssText =
-          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
 
-        // Create video element for thumbnail
+        // Create video thumbnail using canvas approach to eliminate black bar
         const videoElement = document.createElement("video");
         videoElement.src = src;
         videoElement.style.cssText =
-          "width: 100%; height: 100%; object-fit: cover;";
+          "width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;";
         videoElement.muted = true;
         videoElement.preload = "metadata";
+        videoElement.setAttribute("playsinline", "true");
+        if (isEditMode) {
+          videoElement.setAttribute("data-edit-mode", "true");
+        }
 
         // Create pure glassmorphism play button overlay
         const playOverlay = document.createElement("div");
@@ -409,8 +411,13 @@ export default function EnhancedRichTextEditor({
           </svg>
         `;
 
+        // Mark as edit mode to prevent click handlers during editing
+        videoPreview.setAttribute("data-edit-mode", isEditMode.toString());
+
         if (!isEditMode) {
-          const clickHandler = () => {
+          const clickHandler = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
             console.log("Video clicked:", src, name);
             if (
               typeof window !== "undefined" &&
@@ -464,15 +471,19 @@ export default function EnhancedRichTextEditor({
     const videoPreview = document.createElement("div");
     videoPreview.className = "video-preview";
     videoPreview.style.cssText =
-      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
 
-    // Create video element for thumbnail
+    // Create video thumbnail using improved approach to eliminate black bar
     const videoElement = document.createElement("video");
     videoElement.src = src;
     videoElement.style.cssText =
-      "width: 100%; height: 100%; object-fit: cover;";
+      "width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;";
     videoElement.muted = true;
     videoElement.preload = "metadata";
+    videoElement.setAttribute("playsinline", "true");
+    if (isEditMode) {
+      videoElement.setAttribute("data-edit-mode", "true");
+    }
 
     // Create pure glassmorphism play button overlay
     const playOverlay = document.createElement("div");
@@ -484,8 +495,22 @@ export default function EnhancedRichTextEditor({
       </svg>
     `;
 
-    // Remove click handlers - they will be added by MarkdownRenderer
-    // This prevents duplicate listeners and ensures consistency
+    // Mark as edit mode to prevent click handlers during editing
+    videoPreview.setAttribute("data-edit-mode", isEditMode.toString());
+
+    // Add click handlers only if not in edit mode
+    if (!isEditMode) {
+      const clickHandler = (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Video clicked:", src, name);
+        if (typeof window !== "undefined" && (window as any).openImageModal) {
+          (window as any).openImageModal(src, name, true);
+        }
+      };
+      videoPreview.addEventListener("click", clickHandler);
+      playOverlay.addEventListener("click", clickHandler);
+    }
 
     videoPreview.appendChild(videoElement);
     videoPreview.appendChild(playOverlay);
@@ -494,16 +519,7 @@ export default function EnhancedRichTextEditor({
     // Insert the container at the end of the editor
     editor.appendChild(mediaContainer);
 
-    // Call global video setup function after adding the video to DOM
-    setTimeout(() => {
-      if (
-        typeof window !== "undefined" &&
-        (window as any).setupVideoListeners
-      ) {
-        console.log("🎬 Chamando setupVideoListeners após adicionar vídeo");
-        (window as any).setupVideoListeners();
-      }
-    }, 200);
+    // No need for global video setup in edit mode
 
     // Position cursor after the media container and ensure text input is visible
     setTimeout(() => {
@@ -511,7 +527,9 @@ export default function EnhancedRichTextEditor({
       if (selection) {
         // Create a div for text input after the media
         const textDiv = document.createElement("div");
-        textDiv.innerHTML = "<br>";
+        textDiv.innerHTML = "&nbsp;"; // Use non-breaking space instead of <br>
+        textDiv.style.minHeight = "1.2em"; // Ensure minimum height for text
+        textDiv.contentEditable = "true"; // Make sure it's editable
         editor.appendChild(textDiv);
 
         const range = document.createRange();
@@ -519,11 +537,14 @@ export default function EnhancedRichTextEditor({
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
+
+        // Focus the text div specifically
+        textDiv.focus();
       }
 
       editor.focus();
       handleInput();
-    }, 10);
+    }, 50); // Increased timeout for better reliability
   };
 
   const insertAudioHtml = (src: string, name: string, size?: number) => {
@@ -747,6 +768,43 @@ export default function EnhancedRichTextEditor({
           outline: none !important;
           border: none !important;
           box-shadow: none !important;
+        }
+
+        /* Ensure text divs after media are properly editable */
+        .rich-editor div:not(.image-container):not(.video-preview) {
+          min-height: 1.2em;
+          line-height: 1.7;
+        }
+
+        /* Prevent ALL interactions with media elements in rich editor */
+        .rich-editor .video-preview,
+        .rich-editor .image-container img,
+        .rich-editor .image-container {
+          pointer-events: none !important;
+          user-select: none !important;
+          cursor: default !important;
+        }
+
+        /* Specific styles for edit mode elements */
+        .rich-editor .video-preview[data-edit-mode="true"] {
+          pointer-events: none !important;
+          user-select: none !important;
+          cursor: default !important;
+        }
+
+        /* Disable ALL pointer events for video elements in edit mode */
+        .rich-editor .video-preview video,
+        .rich-editor .video-preview[data-edit-mode="true"] video {
+          pointer-events: none !important;
+          cursor: default !important;
+        }
+
+        /* Disable ALL pointer events for play overlay in edit mode */
+        .rich-editor .video-preview > div:last-child,
+        .rich-editor .video-preview[data-edit-mode="true"] > div:last-child {
+          pointer-events: none !important;
+          cursor: default !important;
+          opacity: 0.5;
         }
         
         /* Better text flow and line breaks */

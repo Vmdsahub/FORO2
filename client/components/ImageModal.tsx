@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   X,
   Download,
@@ -115,7 +116,7 @@ export default function ImageModal({
     if (isPlaying) {
       controlsTimeoutRef.current = setTimeout(() => {
         setShowControls(false);
-      }, 3000);
+      }, 1500);
     }
   };
 
@@ -131,23 +132,35 @@ export default function ImageModal({
     if (!video) return;
 
     try {
+      // Force fullscreen with multiple browser support
       if (video.requestFullscreen) {
-        video.requestFullscreen().catch(console.error);
-      } else if ((video as any).mozRequestFullScreen) {
-        (video as any).mozRequestFullScreen();
+        video.requestFullscreen({ navigationUI: "hide" });
       } else if ((video as any).webkitRequestFullscreen) {
         (video as any).webkitRequestFullscreen();
+      } else if ((video as any).mozRequestFullScreen) {
+        (video as any).mozRequestFullScreen();
       } else if ((video as any).msRequestFullscreen) {
         (video as any).msRequestFullscreen();
       }
     } catch (error) {
-      console.error("Erro ao entrar em fullscreen:", error);
+      console.log("Tentando fullscreen alternativo:", error);
+      // Try alternative fullscreen approach
+      try {
+        const element = video.parentElement || video;
+        if ((element as any).requestFullscreen) {
+          (element as any).requestFullscreen();
+        }
+      } catch (e) {
+        console.log("Fullscreen não disponível neste ambiente");
+      }
     }
   };
 
   if (!isOpen) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -157,6 +170,7 @@ export default function ImageModal({
     <div
       className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
+      style={{ animation: "none" }}
     >
       <div className="relative max-w-[90vw] max-h-[90vh] rounded-2xl overflow-hidden">
         {/* Glass container */}
@@ -198,17 +212,17 @@ export default function ImageModal({
                   minHeight: "300px",
                 }}
                 onClick={togglePlay}
+                preload="metadata"
+                playsInline
+                controls={false}
+                src={src}
               >
-                <source src={src} type="video/mp4" />
-                <source src={src} type="video/webm" />
-                <source src={src} type="video/mov" />
-                <source src={src} type="video/avi" />
                 Seu navegador não suporta vídeo HTML5.
               </video>
 
               {/* Glass controls overlay */}
               <div
-                className={`absolute bottom-0 left-0 right-0 p-4 transition-opacity duration-300 ${
+                className={`absolute bottom-0 left-0 right-0 p-4 transition-opacity duration-150 ${
                   showControls ? "opacity-100" : "opacity-0"
                 }`}
                 style={{

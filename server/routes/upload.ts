@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 500 * 1024 * 1024, // 500MB for 4K videos
+    fileSize: 6 * 1024 * 1024, // 6MB (Netlify Functions maximum)
   },
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif|webp|mp4|mov|avi|webm|mkv/;
