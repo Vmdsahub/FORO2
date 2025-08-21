@@ -20,9 +20,11 @@ export default function MediaClickHandler({
         const imageEl = img as HTMLImageElement;
 
         // Skip if already has click handler, is in edit mode, or inside rich editor
-        if (imageEl.getAttribute("data-click-handled") === "true" ||
-            imageEl.getAttribute("data-edit-mode") === "true" ||
-            imageEl.closest('.rich-editor')) {
+        if (
+          imageEl.getAttribute("data-click-handled") === "true" ||
+          imageEl.getAttribute("data-edit-mode") === "true" ||
+          imageEl.closest(".rich-editor")
+        ) {
           return;
         }
 
@@ -52,9 +54,11 @@ export default function MediaClickHandler({
         const videoEl = video as HTMLElement;
 
         // Skip if already has click handler, is in edit mode, or inside rich editor
-        if (videoEl.getAttribute("data-click-handled") === "true" ||
-            videoEl.getAttribute("data-edit-mode") === "true" ||
-            videoEl.closest('.rich-editor')) {
+        if (
+          videoEl.getAttribute("data-click-handled") === "true" ||
+          videoEl.getAttribute("data-edit-mode") === "true" ||
+          videoEl.closest(".rich-editor")
+        ) {
           return;
         }
 
