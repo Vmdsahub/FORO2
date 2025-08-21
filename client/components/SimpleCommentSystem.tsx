@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNotifications } from "@/contexts/NotificationContext";
 import { toast } from "sonner";
-import MarkdownRenderer from "@/components/MarkdownRenderer";
+import SimpleMarkdownRenderer from "@/components/SimpleMarkdownRenderer";
 import UserHoverCard from "@/components/UserHoverCard";
 import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
 import ReportModal from "@/components/ReportModal";
