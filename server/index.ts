@@ -43,6 +43,7 @@ import {
   createComment,
   likeComment,
   deleteComment,
+  editComment,
   initializeDemo,
 } from "./routes/simple-comments";
 import {
