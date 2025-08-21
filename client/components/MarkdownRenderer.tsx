@@ -95,7 +95,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       if ((window as any).setupVideoListeners) {
         (window as any).setupVideoListeners();
       }
-    }, 1000);
+    }, 2000);
+
+    // Force immediate setup
+    if ((window as any).setupVideoListeners) {
+      (window as any).setupVideoListeners();
+    }
 
     return () => {
       clearTimeout(timer);
