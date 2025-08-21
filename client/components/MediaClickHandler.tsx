@@ -20,8 +20,7 @@ export default function MediaClickHandler({
         const imageEl = img as HTMLImageElement;
 
         // Skip if in edit mode (RichTextEditor)
-        if (imageEl.getAttribute("data-edit-mode") === "true" ||
-            imageEl.closest(".rich-editor")) {
+        if (imageEl.getAttribute("data-edit-mode") === "true") {
           return;
         }
 
