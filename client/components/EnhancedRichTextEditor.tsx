@@ -131,76 +131,6 @@ export default function EnhancedRichTextEditor({
     handleInput();
   };
 
-  // Enhanced function to ensure proper cursor positioning for empty editor
-  const insertHtmlAndRestoreCursor = (html: string) => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const selection = window.getSelection();
-
-    // Special handling for empty editor
-    const editorContent = editor.innerHTML.trim();
-    const isEmpty = editorContent === "" || editorContent === "<br>";
-
-    if (isEmpty) {
-      // For empty editor, insert at the beginning and add editable space after
-      editor.innerHTML = `<div><br></div>${html}<div><br></div>`;
-
-      // Set cursor to the first line
-      const range = document.createRange();
-      const firstDiv = editor.querySelector("div");
-      if (firstDiv) {
-        range.setStart(firstDiv, 0);
-        range.collapse(true);
-
-        if (selection) {
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      }
-    } else {
-      // For non-empty editor, use standard insertion
-      if (!selection || selection.rangeCount === 0) {
-        // If no selection, place cursor at end
-        editor.focus();
-        const range = document.createRange();
-        range.selectNodeContents(editor);
-        range.collapse(false);
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-      }
-
-      // Insert the HTML
-      execCommand("insertHTML", html);
-
-      // Ensure there's always editable space after media insertion
-      setTimeout(() => {
-        const currentSelection = window.getSelection();
-        if (currentSelection && currentSelection.rangeCount > 0) {
-          const range = currentSelection.getRangeAt(0);
-
-          // Insert a line break for text editing after media
-          const lineBreak = document.createElement("div");
-          lineBreak.innerHTML = "<br>";
-          range.insertNode(lineBreak);
-
-          // Move cursor to the new line
-          range.setStartAfter(lineBreak);
-          range.collapse(true);
-
-          currentSelection.removeAllRanges();
-          currentSelection.addRange(range);
-
-          // Trigger change event
-          handleInput();
-        }
-
-        // Focus the editor
-        editor.focus();
-      }, 50); // Increased timeout for better stability
-    }
-  };
-
   const handleBold = () => execCommand("bold");
   const handleItalic = () => execCommand("italic");
   const handleUnderline = () => execCommand("underline");
@@ -253,34 +183,395 @@ export default function EnhancedRichTextEditor({
   };
 
   const insertImageHtml = (src: string, alt: string) => {
-    // Image HTML for editor - NO click functionality, smaller size, basic styling
-    // Reduced size to 65% of original (260px instead of 400px) - NO click in editor
-    const img = `<div contenteditable="false" style="margin: 16px 0; text-align: center; user-select: none; clear: both;"><img src="${src}" alt="${alt}" style="max-width: 260px !important; width: 260px; height: auto; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; margin: 0 auto;" /></div><div><br></div>`;
-    insertHtmlAndRestoreCursor(img);
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    // Clean up empty divs at the end first
+    while (
+      editor.lastElementChild &&
+      editor.lastElementChild.tagName === "DIV" &&
+      editor.lastElementChild.innerHTML === "<br>"
+    ) {
+      editor.removeChild(editor.lastElementChild);
+    }
+
+    // Find the last image container in the editor
+    const imageContainers = editor.querySelectorAll(".image-container");
+    const lastImageContainer = imageContainers[
+      imageContainers.length - 1
+    ] as HTMLElement;
+
+    // Check if we should group images - look for last image container and check if there's only empty content after it
+    let shouldGroupImages = false;
+
+    if (lastImageContainer) {
+      // Find position of last image container
+      const children = Array.from(editor.children);
+      const lastImageIndex = children.indexOf(lastImageContainer);
+
+      if (lastImageIndex !== -1) {
+        // Check all elements after the last image container
+        let hasContentAfterImage = false;
+        for (let i = lastImageIndex + 1; i < children.length; i++) {
+          const child = children[i];
+          // If it's a div with just <br>, it's empty
+          if (child.tagName === "DIV" && child.innerHTML === "<br>") {
+            continue;
+          }
+          // If it has any text content, there's content after the image
+          if (child.textContent && child.textContent.trim()) {
+            hasContentAfterImage = true;
+            break;
+          }
+        }
+
+        shouldGroupImages = !hasContentAfterImage;
+      }
+    }
+
+    if (shouldGroupImages && lastImageContainer) {
+      // Calculate how many images are already in the container
+      const existingImages = lastImageContainer.querySelectorAll("img");
+      const containerWidth = 600; // increased container width
+      const imageWidth = 120 + 8; // reduced image width + margin
+      const maxImagesPerRow = Math.floor(containerWidth / imageWidth);
+
+      if (existingImages.length < maxImagesPerRow) {
+        // Add image to existing container (side by side)
+        const imageElement = document.createElement("img");
+        imageElement.src = src;
+        imageElement.alt = alt;
+        imageElement.style.cssText =
+          "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+        lastImageContainer.appendChild(imageElement);
+
+        // Position cursor after the container but don't create extra div
+        const selection = window.getSelection();
+        if (selection) {
+          const range = document.createRange();
+          range.setStartAfter(lastImageContainer);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+
+        handleInput();
+        return;
+      }
+    }
+
+    // Create new image container
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      editor.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+
+    // Clean up any trailing BR tags before inserting
+    const range = selection!.getRangeAt(0);
+    let insertPosition = range.startContainer;
+
+    // If we're in a text node, move to parent
+    if (insertPosition.nodeType === Node.TEXT_NODE) {
+      insertPosition = insertPosition.parentNode!;
+    }
+
+    // Remove any empty BR tags at the end
+    while (
+      editor.lastChild &&
+      editor.lastChild.nodeType === Node.ELEMENT_NODE &&
+      (editor.lastChild as HTMLElement).tagName === "BR"
+    ) {
+      editor.removeChild(editor.lastChild);
+    }
+
+    // Create the image container
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "image-container";
+    imageContainer.contentEditable = "false";
+    imageContainer.style.cssText =
+      "margin: 8px 0; text-align: center; user-select: none; line-height: 0;";
+
+    const imageElement = document.createElement("img");
+    imageElement.src = src;
+    imageElement.alt = alt;
+    imageElement.style.cssText =
+      "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+
+    imageContainer.appendChild(imageElement);
+
+    // Insert the container at the end of the editor
+    editor.appendChild(imageContainer);
+
+    // Position cursor after the image container and ensure text input is visible
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection) {
+        // Create a div for text input after the image
+        const textDiv = document.createElement("div");
+        textDiv.innerHTML = "<br>";
+        editor.appendChild(textDiv);
+
+        const range = document.createRange();
+        range.setStart(textDiv, 0);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const insertVideoHtml = (src: string, name: string) => {
-    // Enhanced video HTML with conditional click behavior and better sizing
-    const clickHandler = isEditMode
-      ? 'style="cursor: default;"' // No click in edit mode
-      : `onclick="window.openImageModal('${src}', '${name}', true)" style="cursor: pointer;"`;
+    const editor = editorRef.current;
+    if (!editor) return;
 
-    // Reduced size to 65% (325px instead of 500px)
-    const video = `<div contenteditable="false" style="margin: 16px 0; text-align: center; user-select: none; clear: both;"><video controls ${clickHandler} style="max-width: 325px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block; margin: 0 auto;"><source src="${src}" type="video/mp4"><source src="${src}" type="video/webm"><source src="${src}" type="video/mov">Seu navegador não suporta vídeo HTML5.</video></div>`;
-    insertHtmlAndRestoreCursor(video);
+    // Clean up empty divs at the end first
+    while (
+      editor.lastElementChild &&
+      editor.lastElementChild.tagName === "DIV" &&
+      editor.lastElementChild.innerHTML === "<br>"
+    ) {
+      editor.removeChild(editor.lastElementChild);
+    }
+
+    // Find the last media container (images or videos) in the editor
+    const mediaContainers = editor.querySelectorAll(
+      ".image-container, .video-container",
+    );
+    const lastMediaContainer = mediaContainers[
+      mediaContainers.length - 1
+    ] as HTMLElement;
+
+    // Check if we should group with existing media
+    let shouldGroupMedia = false;
+
+    if (lastMediaContainer) {
+      // Find position of last media container
+      const children = Array.from(editor.children);
+      const lastMediaIndex = children.indexOf(lastMediaContainer);
+
+      if (lastMediaIndex !== -1) {
+        // Check all elements after the last media container
+        let hasContentAfterMedia = false;
+        for (let i = lastMediaIndex + 1; i < children.length; i++) {
+          const child = children[i];
+          if (child.tagName === "DIV" && child.innerHTML === "<br>") {
+            continue;
+          }
+          if (child.textContent && child.textContent.trim()) {
+            hasContentAfterMedia = true;
+            break;
+          }
+        }
+
+        shouldGroupMedia = !hasContentAfterMedia;
+      }
+    }
+
+    if (shouldGroupMedia && lastMediaContainer) {
+      // Calculate how many media items are already in the container
+      const existingMedia = lastMediaContainer.querySelectorAll(
+        "img, .video-preview",
+      );
+      const containerWidth = 800;
+      const mediaWidth = 240 + 8; // media width + margin (for videos), images are still 120px
+      const maxMediaPerRow = Math.floor(containerWidth / mediaWidth);
+
+      if (existingMedia.length < maxMediaPerRow) {
+        // Add video preview to existing container (side by side)
+        const videoPreview = document.createElement("div");
+        videoPreview.className = "video-preview";
+        videoPreview.style.cssText =
+          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+
+        // Create video element for thumbnail
+        const videoElement = document.createElement("video");
+        videoElement.src = src;
+        videoElement.style.cssText =
+          "width: 100%; height: 100%; object-fit: cover;";
+        videoElement.muted = true;
+        videoElement.preload = "metadata";
+
+        // Create pure glassmorphism play button overlay
+        const playOverlay = document.createElement("div");
+        playOverlay.style.cssText =
+          "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
+        playOverlay.innerHTML = `
+          <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
+            <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
+          </svg>
+        `;
+
+        if (!isEditMode) {
+          const clickHandler = () => {
+            console.log("Video clicked:", src, name);
+            if (
+              typeof window !== "undefined" &&
+              (window as any).openImageModal
+            ) {
+              (window as any).openImageModal(src, name, true);
+            }
+          };
+          videoPreview.addEventListener("click", clickHandler);
+          playOverlay.addEventListener("click", clickHandler);
+        }
+
+        videoPreview.appendChild(videoElement);
+        videoPreview.appendChild(playOverlay);
+        lastMediaContainer.appendChild(videoPreview);
+
+        // Position cursor after the container
+        const selection = window.getSelection();
+        if (selection) {
+          const range = document.createRange();
+          range.setStartAfter(lastMediaContainer);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+
+        handleInput();
+        return;
+      }
+    }
+
+    // Create new media container
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      editor.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+
+    // Create the media container
+    const mediaContainer = document.createElement("div");
+    mediaContainer.className = "image-container"; // Use same class for consistent styling
+    mediaContainer.contentEditable = "false";
+    mediaContainer.style.cssText =
+      "margin: 8px 0; text-align: center; user-select: none; line-height: 0;";
+
+    // Create video preview
+    const videoPreview = document.createElement("div");
+    videoPreview.className = "video-preview";
+    videoPreview.style.cssText =
+      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+
+    // Create video element for thumbnail
+    const videoElement = document.createElement("video");
+    videoElement.src = src;
+    videoElement.style.cssText =
+      "width: 100%; height: 100%; object-fit: cover;";
+    videoElement.muted = true;
+    videoElement.preload = "metadata";
+
+    // Create pure glassmorphism play button overlay
+    const playOverlay = document.createElement("div");
+    playOverlay.style.cssText =
+      "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
+    playOverlay.innerHTML = `
+      <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
+        <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
+      </svg>
+    `;
+
+    if (!isEditMode) {
+      const clickHandler = () => {
+        console.log("Video clicked:", src, name);
+        if (typeof window !== "undefined" && (window as any).openImageModal) {
+          (window as any).openImageModal(src, name, true);
+        }
+      };
+      videoPreview.addEventListener("click", clickHandler);
+      playOverlay.addEventListener("click", clickHandler);
+    }
+
+    videoPreview.appendChild(videoElement);
+    videoPreview.appendChild(playOverlay);
+    mediaContainer.appendChild(videoPreview);
+
+    // Insert the container at the end of the editor
+    editor.appendChild(mediaContainer);
+
+    // Position cursor after the media container and ensure text input is visible
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection) {
+        // Create a div for text input after the media
+        const textDiv = document.createElement("div");
+        textDiv.innerHTML = "<br>";
+        editor.appendChild(textDiv);
+
+        const range = document.createRange();
+        range.setStart(textDiv, 0);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const insertAudioHtml = (src: string, name: string, size?: number) => {
     const sizeText = size ? ` (${formatFileSize(size)})` : "";
     // Reduced width to 65% (260px instead of 400px)
-    const audio = `<div contenteditable="false" style="margin: 16px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; max-width: 260px; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; clear: both;"><audio controls style="width: 100%; height: 32px; margin-bottom: 8px;"><source src="${src}" type="audio/mpeg"><source src="${src}" type="audio/wav"><source src="${src}" type="audio/ogg">Seu navegador não suporta áudio HTML5.</audio><div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 13px; color: #374151; font-weight: 500;">${name}${sizeText}</span><button onclick="window.downloadFile('${src}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do áudio">Download</button></div></div>`;
-    insertHtmlAndRestoreCursor(audio);
+    const audio = `<div contenteditable="false" style="margin: 8px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; max-width: 260px; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; clear: both;"><audio controls style="width: 100%; height: 32px; margin-bottom: 8px;"><source src="${src}" type="audio/mpeg"><source src="${src}" type="audio/wav"><source src="${src}" type="audio/ogg">Seu navegador não suporta áudio HTML5.</audio><div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 13px; color: #374151; font-weight: 500;">${name}${sizeText}</span><button onclick="window.downloadFile('${src}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do áudio">Download</button></div></div>`;
+
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    // Insert audio without extra line breaks
+    execCommand("insertHTML", audio);
+
+    // Position cursor after audio
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection) {
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const insertFileLink = (url: string, name: string, size?: number) => {
     const sizeText = size ? ` (${formatFileSize(size)})` : "";
-    const fileLink = `<div contenteditable="false" style="margin: 16px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; transition: all 0.2s; clear: both;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'"><div style="display: flex; align-items: center; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 14px; color: #6b7280;">📎</span><span style="font-size: 14px; color: #374151; font-weight: 500;">${name}${sizeText}</span></div><button onclick="window.downloadFile('${url}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do arquivo">Download</button></div></div>`;
-    insertHtmlAndRestoreCursor(fileLink);
+    const fileLink = `<div contenteditable="false" style="margin: 8px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; transition: all 0.2s; clear: both;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'"><div style="display: flex; align-items: center; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 14px; color: #6b7280;">📎</span><span style="font-size: 14px; color: #374151; font-weight: 500;">${name}${sizeText}</span></div><button onclick="window.downloadFile('${url}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do arquivo">Download</button></div></div>`;
+
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    // Insert file link without extra line breaks
+    execCommand("insertHTML", fileLink);
+
+    // Position cursor after file
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection) {
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -292,7 +583,7 @@ export default function EnhancedRichTextEditor({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg focus-within:ring-2 focus-within:ring-gray-500 focus-within:border-gray-500 bg-white">
+    <div className="border border-gray-200 rounded-lg bg-white">
       {/* Toolbar */}
       <div className="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50 flex-wrap">
         <Button
@@ -447,6 +738,13 @@ export default function EnhancedRichTextEditor({
           word-break: break-word;
           hyphens: auto;
         }
+
+        /* Remove focus outline that creates strange border */
+        .rich-editor:focus {
+          outline: none !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
         
         /* Better text flow and line breaks */
         .rich-editor * {
@@ -468,9 +766,31 @@ export default function EnhancedRichTextEditor({
         .rich-editor div[contenteditable="false"] {
           position: relative;
           clear: both;
-          margin: 16px 0;
+          margin: 8px 0;
           word-wrap: normal;
           overflow-wrap: normal;
+        }
+
+        /* Styling for image containers */
+        .rich-editor .image-container {
+          margin: 8px 0 !important;
+          text-align: center;
+          line-height: 0;
+          max-width: 100%;
+          word-wrap: normal;
+          overflow-wrap: normal;
+        }
+
+        .rich-editor .image-container img {
+          margin: 0 4px 4px 0 !important;
+          display: inline-block !important;
+          vertical-align: top !important;
+          max-width: 120px !important;
+          width: 120px !important;
+        }
+
+        .rich-editor .image-container img:last-child {
+          margin-right: 0 !important;
         }
         
         /* Ensure proper spacing and cursor placement */
@@ -488,8 +808,8 @@ export default function EnhancedRichTextEditor({
         
         /* Prevent content overflow and force smaller image size in editor */
         .rich-editor img {
-          max-width: 260px !important;
-          width: 260px !important;
+          max-width: 120px !important;
+          width: 120px !important;
           height: auto !important;
         }
 

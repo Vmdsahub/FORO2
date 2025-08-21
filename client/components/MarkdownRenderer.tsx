@@ -66,8 +66,30 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const altMatch = match.match(/alt="([^"]*)"/);
           const alt = altMatch ? altMatch[1] : "";
 
-          // Replace with clickable image with rounded borders
-          return `<img src="${src}" alt="${alt}" style="max-width: 260px; width: 260px; height: auto; border-radius: 16px; border: 2px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'" onclick="window.openImageModal('${src}', '${alt}', false)" loading="lazy" />`;
+          // Replace with clickable image with rounded borders - matching editor size
+          return `<img src="${src}" alt="${alt}" style="max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onclick="window.openImageModal('${src}', '${alt}', false)" loading="lazy" />`;
+        },
+      );
+
+      // Convert video previews to clickable thumbnails
+      processedHtml = processedHtml.replace(
+        /<div class="video-preview"[^>]*>(.*?)<\/div>/g,
+        (match) => {
+          // Extract video source from the video element
+          const srcMatch = match.match(/src="([^"]*)"/);
+          const src = srcMatch ? srcMatch[1] : "";
+
+          // Create video preview thumbnail
+          return `<div class="video-preview" style="position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden; transition: all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onclick="(function(e) { console.log('Clicking video:', '${src}'); e.preventDefault(); e.stopPropagation(); if (window.openImageModal) { window.openImageModal('${src}', '', true); } else { console.log('openImageModal not found'); } })(event)">
+            <video style="width: 100%; height: 100%; object-fit: cover;" muted preload="metadata">
+              <source src="${src}" type="video/mp4">
+            </video>
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;">
+              <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
+                <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
+              </svg>
+            </div>
+          </div>`;
         },
       );
 
