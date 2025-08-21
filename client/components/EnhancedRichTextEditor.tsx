@@ -473,13 +473,14 @@ export default function EnhancedRichTextEditor({
     videoPreview.style.cssText =
       "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
 
-    // Create video element for thumbnail
+    // Create video thumbnail using improved approach to eliminate black bar
     const videoElement = document.createElement("video");
     videoElement.src = src;
     videoElement.style.cssText =
-      "width: 100%; height: 100%; object-fit: cover; display: block;";
+      "width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 8px;";
     videoElement.muted = true;
     videoElement.preload = "metadata";
+    videoElement.setAttribute("playsinline", "true");
     if (isEditMode) {
       videoElement.setAttribute("data-edit-mode", "true");
     }
