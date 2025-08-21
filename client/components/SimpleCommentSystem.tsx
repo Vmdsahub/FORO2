@@ -451,7 +451,7 @@ export default function SimpleCommentSystem({
                 </button>
               </div>
               <div className="text-sm text-gray-700 italic line-clamp-2">
-                <MarkdownRenderer content={quotedComment.content} />
+                <SimpleMarkdownRenderer content={quotedComment.content} />
               </div>
             </div>
           )}
