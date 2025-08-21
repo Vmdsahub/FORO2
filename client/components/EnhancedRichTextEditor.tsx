@@ -413,8 +413,13 @@ export default function EnhancedRichTextEditor({
           </svg>
         `;
 
+        // Mark as edit mode to prevent click handlers during editing
+        videoPreview.setAttribute("data-edit-mode", isEditMode.toString());
+
         if (!isEditMode) {
-          const clickHandler = () => {
+          const clickHandler = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
             console.log("Video clicked:", src, name);
             if (
               typeof window !== "undefined" &&
