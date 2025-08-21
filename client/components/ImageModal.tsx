@@ -40,11 +40,11 @@ export default function ImageModal({
       setCurrentTime(0);
       // Prevent event bubbling issues when modal closes
       setTimeout(() => {
-        document.body.style.pointerEvents = '';
+        document.body.style.pointerEvents = "";
       }, 100);
     } else {
       // Temporarily disable pointer events to prevent unwanted clicks
-      document.body.style.pointerEvents = 'auto';
+      document.body.style.pointerEvents = "auto";
     }
   }, [isOpen]);
 

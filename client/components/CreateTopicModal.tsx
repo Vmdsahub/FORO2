@@ -179,7 +179,9 @@ export default function CreateTopicModal({
           console.error("Error parsing error response:", parseError);
           try {
             const errorText = await response.text();
-            displayMessage = errorText || `Erro HTTP ${response.status}: ${response.statusText}`;
+            displayMessage =
+              errorText ||
+              `Erro HTTP ${response.status}: ${response.statusText}`;
           } catch {
             displayMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
           }

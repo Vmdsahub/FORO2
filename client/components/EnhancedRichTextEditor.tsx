@@ -496,10 +496,7 @@ export default function EnhancedRichTextEditor({
         e.preventDefault();
         e.stopPropagation();
         console.log("Video clicked:", src, name);
-        if (
-          typeof window !== "undefined" &&
-          (window as any).openImageModal
-        ) {
+        if (typeof window !== "undefined" && (window as any).openImageModal) {
           (window as any).openImageModal(src, name, true);
         }
       };

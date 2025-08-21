@@ -14,13 +14,13 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
   // Simple function to handle video clicks
   const handleVideoClick = (src: string, name: string) => {
-    console.log('🎬 Video clicked:', src);
+    console.log("🎬 Video clicked:", src);
     setModalImage({ src, alt: name, isVideo: true });
   };
 
-  // Simple function to handle image clicks  
+  // Simple function to handle image clicks
   const handleImageClick = (src: string, alt: string) => {
-    console.log('🖼️ Image clicked:', src);
+    console.log("🖼️ Image clicked:", src);
     setModalImage({ src, alt, isVideo: false });
   };
 
@@ -46,7 +46,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         }, 0);
 
         return `<img id="${imageId}" src="${src}" alt="${alt}" style="max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; cursor: pointer;" />`;
-      }
+      },
     );
 
     // Replace video patterns with clickable video previews
@@ -78,14 +78,14 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             </div>
           </div>
         `;
-      }
+      },
     );
 
     return processedContent;
   };
 
   const closeModal = () => {
-    console.log('❌ Closing modal');
+    console.log("❌ Closing modal");
     setModalImage(null);
   };
 
@@ -95,7 +95,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     delete (window as any).openImageModal;
     delete (window as any).setupVideoListeners;
     delete (window as any).debugVideoListeners;
-    
+
     return () => {
       // Clean up on unmount
       delete (window as any).openImageModal;

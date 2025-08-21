@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from "react";
 
 interface VideoModalData {
   src: string;
@@ -22,18 +22,18 @@ export function VideoModalProvider({ children }: { children: ReactNode }) {
   const openModal = (data: VideoModalData) => {
     // Prevent opening if already closing or opening
     if (isClosing || modalData) return;
-    
-    console.log('🎬 Opening video modal:', data.src);
+
+    console.log("🎬 Opening video modal:", data.src);
     setModalData(data);
   };
 
   const closeModal = () => {
     if (isClosing) return;
-    
-    console.log('❌ Closing video modal');
+
+    console.log("❌ Closing video modal");
     setIsClosing(true);
     setModalData(null);
-    
+
     // Reset closing state after animation
     setTimeout(() => {
       setIsClosing(false);
@@ -41,12 +41,12 @@ export function VideoModalProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <VideoModalContext.Provider 
-      value={{ 
-        modalData, 
-        openModal, 
-        closeModal, 
-        isOpen: !!modalData 
+    <VideoModalContext.Provider
+      value={{
+        modalData,
+        openModal,
+        closeModal,
+        isOpen: !!modalData,
       }}
     >
       {children}
@@ -57,7 +57,7 @@ export function VideoModalProvider({ children }: { children: ReactNode }) {
 export function useVideoModal() {
   const context = useContext(VideoModalContext);
   if (!context) {
-    throw new Error('useVideoModal must be used within VideoModalProvider');
+    throw new Error("useVideoModal must be used within VideoModalProvider");
   }
   return context;
 }
