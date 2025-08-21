@@ -41,6 +41,11 @@ export default function TopicView() {
   const [isLoading, setIsLoading] = useState(true);
   const [savedTopicIds, setSavedTopicIds] = useState<string[]>([]);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState("");
+  const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editCategory, setEditCategory] = useState("");
 
   useEffect(() => {
     fetchTopic();
