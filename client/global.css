@@ -334,7 +334,8 @@
   }
 
   .image-container img,
-  .image-container .video-preview {
+  .image-container .video-preview,
+  .video-preview {
     margin: 0 4px 4px 0 !important;
     display: inline-block !important;
     vertical-align: top !important;
@@ -378,7 +379,7 @@
     object-fit: cover !important;
   }
 
-  /* 🌙 DARK THEME - Sistema Completo e Moderno */
+  /* �� DARK THEME - Sistema Completo e Moderno */
   .theme-dark {
     /* === PALETA DE CORES BASE === */
     --dark-bg-primary: #0a0b0f; /* Fundo principal - quase preto */

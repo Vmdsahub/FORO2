@@ -89,18 +89,27 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     setModalImage(null);
   };
 
-  // Clean up any global functions that might conflict
+  // Setup global function if not exists (avoid conflicts)
   useEffect(() => {
-    // Clear any existing global functions
-    delete (window as any).openImageModal;
-    delete (window as any).setupVideoListeners;
-    delete (window as any).debugVideoListeners;
+    // Only set if not already defined to avoid conflicts with RichTextEditor
+    if (!(window as any).openImageModal) {
+      (window as any).openImageModal = (
+        src: string,
+        alt: string,
+        isVideo: boolean,
+      ) => {
+        setModalImage({ src, alt, isVideo });
+      };
+    }
 
     return () => {
-      // Clean up on unmount
-      delete (window as any).openImageModal;
-      delete (window as any).setupVideoListeners;
-      delete (window as any).debugVideoListeners;
+      // Only clean up if we were the ones who set it
+      if (
+        (window as any).openImageModal &&
+        !document.querySelector(".rich-editor")
+      ) {
+        delete (window as any).openImageModal;
+      }
     };
   }, []);
 

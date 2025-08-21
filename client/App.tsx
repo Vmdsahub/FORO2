@@ -7,6 +7,7 @@ import { NewsletterTopic, WeeklyNewsletter } from "@/utils/weekSystem";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import MediaClickHandler from "@/components/MediaClickHandler";
 import GlassmorphismBackground from "@/components/GlassmorphismBackground";
 import TopicView from "@/pages/TopicView";
 import Index from "@/pages/Index";
@@ -366,6 +367,7 @@ function App() {
           <BrowserRouter>
             <div className="min-h-screen bg-gray-50 transition-all duration-300 ease-in-out hide-scrollbar app-container">
               <GlassmorphismBackground />
+              <MediaClickHandler />
               <Header activeSection={activeSection} />
               <Routes>
                 <Route
