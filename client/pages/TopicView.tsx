@@ -249,7 +249,7 @@ export default function TopicView() {
 
           {/* Topic Content */}
           <div className="border-t border-gray-100 pt-4 mb-4">
-            <MarkdownRenderer content={topic.content} />
+            <SimpleMarkdownRenderer content={topic.content} />
           </div>
 
           {/* Actions */}
