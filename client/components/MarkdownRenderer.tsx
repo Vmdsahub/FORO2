@@ -30,9 +30,10 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       videoElements.forEach((element, index) => {
         console.log(`🎯 Vídeo ${index + 1}:`, element);
 
+        // Remove existing listener if present to refresh
         if (element.hasAttribute('data-listener-added')) {
-          console.log(`⚠️ Vídeo ${index + 1} já tem listener`);
-          return;
+          console.log(`🔄 Removendo listener antigo do vídeo ${index + 1}`);
+          element.removeAttribute('data-listener-added');
         }
 
         let videoSrc = '';
@@ -49,6 +50,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         }
 
         if (videoSrc) {
+          // Create a fresh click handler for each video
           const clickHandler = (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
@@ -56,12 +58,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             setModalImage({ src: videoSrc, alt: 'Vídeo', isVideo: true });
           };
 
+          // Remove any existing listeners first
+          element.removeEventListener('click', clickHandler);
+          // Add new listener
           element.addEventListener('click', clickHandler);
           element.setAttribute('data-listener-added', 'true');
           console.log(`✅ Event listener adicionado para vídeo ${index + 1}:`, videoSrc);
-
-          // Test click immediately to verify it works
-          console.log(`🧪 Testando clique no vídeo ${index + 1}...`);
         } else {
           console.log(`❌ Vídeo ${index + 1} - não foi possível encontrar src`);
           console.log(`🔍 Debug - elemento:`, element);
