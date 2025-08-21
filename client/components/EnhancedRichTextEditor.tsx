@@ -623,8 +623,8 @@ export default function EnhancedRichTextEditor({
         
         /* Prevent content overflow and force smaller image size in editor */
         .rich-editor img {
-          max-width: 180px !important;
-          width: 180px !important;
+          max-width: 120px !important;
+          width: 120px !important;
           height: auto !important;
         }
 
