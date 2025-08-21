@@ -118,6 +118,21 @@ export default function ImageModal({
     link.click();
   };
 
+  const handleFullscreen = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (video.requestFullscreen) {
+      video.requestFullscreen();
+    } else if ((video as any).mozRequestFullScreen) {
+      (video as any).mozRequestFullScreen();
+    } else if ((video as any).webkitRequestFullscreen) {
+      (video as any).webkitRequestFullscreen();
+    } else if ((video as any).msRequestFullscreen) {
+      (video as any).msRequestFullscreen();
+    }
+  };
+
   if (!isOpen) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
