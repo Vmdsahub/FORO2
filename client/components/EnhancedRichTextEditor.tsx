@@ -287,12 +287,17 @@ export default function EnhancedRichTextEditor({
     // Insert the container at the end of the editor
     editor.appendChild(imageContainer);
 
-    // Position cursor after the image container - only add space if needed for typing
+    // Position cursor after the image container and ensure text input is visible
     setTimeout(() => {
       const selection = window.getSelection();
       if (selection) {
+        // Create a div for text input after the image
+        const textDiv = document.createElement('div');
+        textDiv.innerHTML = '<br>';
+        editor.appendChild(textDiv);
+
         const range = document.createRange();
-        range.setStartAfter(imageContainer);
+        range.setStart(textDiv, 0);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
