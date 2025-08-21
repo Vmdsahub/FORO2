@@ -491,6 +491,13 @@ export default function EnhancedRichTextEditor({
     videoPreview.appendChild(playOverlay);
     mediaContainer.appendChild(videoPreview);
 
+    // Call global video setup function after adding the video
+    setTimeout(() => {
+      if (typeof window !== "undefined" && (window as any).setupVideoListeners) {
+        (window as any).setupVideoListeners();
+      }
+    }, 100);
+
     // Insert the container at the end of the editor
     editor.appendChild(mediaContainer);
 
