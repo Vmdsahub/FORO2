@@ -51,6 +51,8 @@ function CommentItem({
   onEdit: (commentId: string, newContent: string) => Promise<void>;
 }) {
   const { user, isAdmin } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState("");
 
   const isTopicOwner = user?.id === topicAuthorId;
   const isCommentOwner = user?.id === comment.authorId;
