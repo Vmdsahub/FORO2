@@ -396,7 +396,9 @@ export default function EnhancedRichTextEditor({
           "width: 100%; height: 100%; object-fit: cover; display: block;";
         videoElement.muted = true;
         videoElement.preload = "metadata";
-        videoElement.setAttribute("data-edit-mode", "true");
+        if (isEditMode) {
+          videoElement.setAttribute("data-edit-mode", "true");
+        }
 
         // Create pure glassmorphism play button overlay
         const playOverlay = document.createElement("div");
