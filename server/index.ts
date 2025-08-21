@@ -130,6 +130,9 @@ export function createServer() {
   //   handleLikeComment,
   // );
 
+  // Edit routes
+  app.put("/api/topics/:topicId", authenticateToken, handleEditTopic);
+
   // Admin routes
   app.delete("/api/topics/:topicId", authenticateToken, handleDeleteTopic);
   // app.delete(
