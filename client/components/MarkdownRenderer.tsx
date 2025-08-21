@@ -73,8 +73,8 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
             e.preventDefault();
             e.stopPropagation();
 
-            // Debounce protection - prevent rapid clicks
-            if (clickTimeout) return;
+            // Debounce protection - prevent rapid clicks and modal conflicts
+            if (clickTimeout || isModalClosing) return;
 
             clickTimeout = setTimeout(() => {
               clickTimeout = null;
