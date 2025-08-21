@@ -69,11 +69,21 @@ export default function CreateTopicModal({
         body: formData,
       });
 
+      // Read response body only once
+      const responseText = await response.text();
+
       if (response.ok) {
-        const result = await response.json();
-        return result.url;
+        try {
+          const result = JSON.parse(responseText);
+          return result.url;
+        } catch (parseError) {
+          console.error("Error parsing upload response:", parseError);
+          toast.error("Erro ao processar resposta do upload");
+          return null;
+        }
       } else {
         console.error("Erro no upload:", response.status, response.statusText);
+        console.error("Response body:", responseText);
         toast.error("Erro ao fazer upload da imagem");
       }
     } catch (error) {

@@ -389,7 +389,7 @@ export default function EnhancedRichTextEditor({
         const videoPreview = document.createElement("div");
         videoPreview.className = "video-preview";
         videoPreview.style.cssText =
-          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
 
         // Create video element for thumbnail
         const videoElement = document.createElement("video");
@@ -464,7 +464,7 @@ export default function EnhancedRichTextEditor({
     const videoPreview = document.createElement("div");
     videoPreview.className = "video-preview";
     videoPreview.style.cssText =
-      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
 
     // Create video element for thumbnail
     const videoElement = document.createElement("video");
@@ -484,16 +484,8 @@ export default function EnhancedRichTextEditor({
       </svg>
     `;
 
-    if (!isEditMode) {
-      const clickHandler = () => {
-        console.log("Video clicked:", src, name);
-        if (typeof window !== "undefined" && (window as any).openImageModal) {
-          (window as any).openImageModal(src, name, true);
-        }
-      };
-      videoPreview.addEventListener("click", clickHandler);
-      playOverlay.addEventListener("click", clickHandler);
-    }
+    // Remove click handlers - they will be added by MarkdownRenderer
+    // This prevents duplicate listeners and ensures consistency
 
     videoPreview.appendChild(videoElement);
     videoPreview.appendChild(playOverlay);
@@ -501,6 +493,17 @@ export default function EnhancedRichTextEditor({
 
     // Insert the container at the end of the editor
     editor.appendChild(mediaContainer);
+
+    // Call global video setup function after adding the video to DOM
+    setTimeout(() => {
+      if (
+        typeof window !== "undefined" &&
+        (window as any).setupVideoListeners
+      ) {
+        console.log("🎬 Chamando setupVideoListeners após adicionar vídeo");
+        (window as any).setupVideoListeners();
+      }
+    }, 200);
 
     // Position cursor after the media container and ensure text input is visible
     setTimeout(() => {

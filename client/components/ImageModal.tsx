@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Play, Pause, Volume2, VolumeX } from "lucide-react";
+import {
+  X,
+  Download,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+} from "lucide-react";
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -116,6 +124,25 @@ export default function ImageModal({
     link.href = src;
     link.download = alt || (isVideo ? "video" : "image");
     link.click();
+  };
+
+  const handleFullscreen = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    try {
+      if (video.requestFullscreen) {
+        video.requestFullscreen().catch(console.error);
+      } else if ((video as any).mozRequestFullScreen) {
+        (video as any).mozRequestFullScreen();
+      } else if ((video as any).webkitRequestFullscreen) {
+        (video as any).webkitRequestFullscreen();
+      } else if ((video as any).msRequestFullscreen) {
+        (video as any).msRequestFullscreen();
+      }
+    } catch (error) {
+      console.error("Erro ao entrar em fullscreen:", error);
+    }
   };
 
   if (!isOpen) return null;
@@ -264,20 +291,38 @@ export default function ImageModal({
                     </span>
                   </div>
 
-                  {/* Download button */}
-                  <Button
-                    onClick={handleDownload}
-                    variant="ghost"
-                    size="sm"
-                    className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.15)",
-                      backdropFilter: "blur(10px)",
-                    }}
-                    title="Download do vídeo"
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
+                  {/* Controls buttons */}
+                  <div className="flex items-center gap-2">
+                    {/* Fullscreen button */}
+                    <Button
+                      onClick={handleFullscreen}
+                      variant="ghost"
+                      size="sm"
+                      className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
+                      style={{
+                        background: "rgba(255, 255, 255, 0.15)",
+                        backdropFilter: "blur(10px)",
+                      }}
+                      title="Tela cheia"
+                    >
+                      <Maximize className="h-4 w-4" />
+                    </Button>
+
+                    {/* Download button */}
+                    <Button
+                      onClick={handleDownload}
+                      variant="ghost"
+                      size="sm"
+                      className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
+                      style={{
+                        background: "rgba(255, 255, 255, 0.15)",
+                        backdropFilter: "blur(10px)",
+                      }}
+                      title="Download do vídeo"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -306,25 +351,11 @@ export default function ImageModal({
             </div>
           )}
         </div>
-
-        {/* Caption */}
-        {alt && (
-          <div
-            className="mt-4 p-3 rounded-xl text-center"
-            style={{
-              background: "rgba(255, 255, 255, 0.1)",
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
-            }}
-          >
-            <p className="text-sm text-white">
-              {isVideo ? "🎬" : "🖼️"} {alt}
-            </p>
-          </div>
-        )}
       </div>
 
-      <style jsx>{`
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .slider::-webkit-slider-thumb {
           appearance: none;
           height: 12px;
@@ -344,7 +375,9 @@ export default function ImageModal({
           border: none;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-      `}</style>
+        `,
+        }}
+      />
     </div>
   );
 }

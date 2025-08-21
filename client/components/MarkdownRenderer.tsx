@@ -22,10 +22,125 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       setModalImage({ src, alt, isVideo });
     };
 
+    // Also setup global video listener function
+    (window as any).setupVideoListeners = () => {
+      const videoElements = document.querySelectorAll(".video-preview");
+      console.log("🔍 Procurando vídeos... Encontrados:", videoElements.length);
+
+      videoElements.forEach((element, index) => {
+        console.log(`🎯 Vídeo ${index + 1}:`, element);
+
+        // Remove existing listener if present to refresh
+        if (element.hasAttribute("data-listener-added")) {
+          console.log(`🔄 Removendo listener antigo do vídeo ${index + 1}`);
+          element.removeAttribute("data-listener-added");
+        }
+
+        let videoSrc = "";
+        const dataSrc = element.getAttribute("data-video-src");
+        if (dataSrc) {
+          videoSrc = dataSrc;
+          console.log(
+            `📂 Vídeo ${index + 1} - src do data-attribute:`,
+            videoSrc,
+          );
+        } else {
+          const videoChild = element.querySelector("video");
+          if (videoChild && videoChild.src) {
+            videoSrc = videoChild.src;
+            console.log(
+              `📂 Vídeo ${index + 1} - src do elemento video:`,
+              videoSrc,
+            );
+          }
+        }
+
+        if (videoSrc) {
+          // Create a fresh click handler for each video
+          const clickHandler = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("🎬 CLIQUE DETECTADO! Abrindo vídeo:", videoSrc);
+            setModalImage({ src: videoSrc, alt: "Vídeo", isVideo: true });
+          };
+
+          // Remove any existing listeners first
+          element.removeEventListener("click", clickHandler);
+          // Add new listener
+          element.addEventListener("click", clickHandler);
+          element.setAttribute("data-listener-added", "true");
+          console.log(
+            `✅ Event listener adicionado para vídeo ${index + 1}:`,
+            videoSrc,
+          );
+        } else {
+          console.log(`❌ Vídeo ${index + 1} - não foi possível encontrar src`);
+          console.log(`🔍 Debug - elemento:`, element);
+          console.log(
+            `🔍 Debug - data-video-src:`,
+            element.getAttribute("data-video-src"),
+          );
+          console.log(
+            `🔍 Debug - video child:`,
+            element.querySelector("video"),
+          );
+        }
+      });
+    };
+
+    // Add global debug function for testing
+    (window as any).debugVideoListeners = () => {
+      const videos = document.querySelectorAll(".video-preview");
+      console.log("🔍 DEBUG: Total de vídeos encontrados:", videos.length);
+      videos.forEach((video, i) => {
+        console.log(`Vídeo ${i + 1}:`, {
+          element: video,
+          hasListener: video.hasAttribute("data-listener-added"),
+          dataSrc: video.getAttribute("data-video-src"),
+          videoChild: video.querySelector("video"),
+          videoSrc: video.querySelector("video")?.src,
+        });
+      });
+      console.log(
+        '💡 Digite "setupVideoListeners()" para reconfigurar os listeners',
+      );
+    };
+
     return () => {
       delete (window as any).openImageModal;
+      delete (window as any).setupVideoListeners;
+      delete (window as any).debugVideoListeners;
     };
   }, []);
+
+  // Configurar event listeners para vídeos após o render
+  useEffect(() => {
+    console.log("🚀 MarkdownRenderer useEffect executado - content mudou");
+
+    const timer = setTimeout(() => {
+      console.log("⏰ Executando setupVideoListeners após 200ms");
+      if ((window as any).setupVideoListeners) {
+        (window as any).setupVideoListeners();
+      }
+    }, 200);
+
+    // Also setup a global interval to catch any new videos
+    const interval = setInterval(() => {
+      if ((window as any).setupVideoListeners) {
+        (window as any).setupVideoListeners();
+      }
+    }, 2000);
+
+    // Force immediate setup
+    if ((window as any).setupVideoListeners) {
+      (window as any).setupVideoListeners();
+    }
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
+  }, [content]);
 
   const isHtmlContent = (text: string): boolean => {
     // Verificar se é HTML válido do editor
@@ -79,14 +194,23 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const srcMatch = match.match(/src="([^"]*)"/);
           const src = srcMatch ? srcMatch[1] : "";
 
-          // Create video preview thumbnail
-          return `<div class="video-preview" style="position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden; transition: all 0.2s ease;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" onclick="(function(e) { console.log('Clicking video:', '${src}'); e.preventDefault(); e.stopPropagation(); if (window.openImageModal) { window.openImageModal('${src}', '', true); } else { console.log('openImageModal not found'); } })(event)">
-            <video style="width: 100%; height: 100%; object-fit: cover;" muted preload="metadata">
+          // Generate unique ID for this video element
+          const videoId = `video_${Math.random().toString(36).substr(2, 9)}`;
+
+          // Create video preview thumbnail with working click handler
+          return `<div
+            class="video-preview"
+            id="${videoId}"
+            style="position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden; transition: all 0.2s ease;"
+            onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.2)'"
+            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'"
+            data-video-src="${src}">
+            <video style="width: 100%; height: 100%; object-fit: cover; pointer-events: none;" muted preload="metadata">
               <source src="${src}" type="video/mp4">
             </video>
-            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
               <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
-                <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
+                <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)"/>
               </svg>
             </div>
           </div>`;
