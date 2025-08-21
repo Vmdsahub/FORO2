@@ -163,6 +163,7 @@ export function createServer() {
   app.post("/api/comments/:topicId", authenticateToken, createComment);
   app.post("/api/comments/:commentId/like", authenticateToken, likeComment);
   app.delete("/api/comments/:commentId", authenticateToken, deleteComment);
+  app.put("/api/comments/:commentId", authenticateToken, editComment);
 
   // Newsletter routes
   app.get("/api/newsletter/articles", handleGetArticles);
