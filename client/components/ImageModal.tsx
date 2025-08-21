@@ -324,7 +324,8 @@ export default function ImageModal({
         )}
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .slider::-webkit-slider-thumb {
           appearance: none;
           height: 12px;
@@ -344,7 +345,8 @@ export default function ImageModal({
           border: none;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-      `}</style>
+        `
+      }} />
     </div>
   );
 }
