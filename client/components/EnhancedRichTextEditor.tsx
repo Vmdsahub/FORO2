@@ -280,7 +280,7 @@ export default function EnhancedRichTextEditor({
     const imageElement = document.createElement('img');
     imageElement.src = src;
     imageElement.alt = alt;
-    imageElement.style.cssText = "max-width: 180px; width: 180px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+    imageElement.style.cssText = "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
 
     imageContainer.appendChild(imageElement);
 
