@@ -474,7 +474,7 @@ export class AdvancedFileValidator {
 
 // Security configuration - More permissive with advanced analysis
 export const SECURITY_CONFIG: SecurityConfig = {
-  maxFileSize: 50 * 1024 * 1024, // 50MB (nginx compatible)
+  maxFileSize: 6 * 1024 * 1024, // 6MB (Netlify Functions maximum)
   allowedMimeTypes: [
     "image/jpeg",
     "image/png",
