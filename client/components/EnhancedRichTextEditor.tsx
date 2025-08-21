@@ -366,14 +366,52 @@ export default function EnhancedRichTextEditor({
   const insertAudioHtml = (src: string, name: string, size?: number) => {
     const sizeText = size ? ` (${formatFileSize(size)})` : "";
     // Reduced width to 65% (260px instead of 400px)
-    const audio = `<div contenteditable="false" style="margin: 16px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; max-width: 260px; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; clear: both;"><audio controls style="width: 100%; height: 32px; margin-bottom: 8px;"><source src="${src}" type="audio/mpeg"><source src="${src}" type="audio/wav"><source src="${src}" type="audio/ogg">Seu navegador não suporta áudio HTML5.</audio><div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 13px; color: #374151; font-weight: 500;">${name}${sizeText}</span><button onclick="window.downloadFile('${src}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do áudio">Download</button></div></div>`;
-    insertHtmlAndRestoreCursor(audio);
+    const audio = `<div contenteditable="false" style="margin: 8px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; max-width: 260px; margin-left: auto; margin-right: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; clear: both;"><audio controls style="width: 100%; height: 32px; margin-bottom: 8px;"><source src="${src}" type="audio/mpeg"><source src="${src}" type="audio/wav"><source src="${src}" type="audio/ogg">Seu navegador não suporta áudio HTML5.</audio><div style="display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 13px; color: #374151; font-weight: 500;">${name}${sizeText}</span><button onclick="window.downloadFile('${src}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do áudio">Download</button></div></div>`;
+
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    // Insert audio without extra line breaks
+    execCommand("insertHTML", audio);
+
+    // Position cursor after audio
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection) {
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const insertFileLink = (url: string, name: string, size?: number) => {
     const sizeText = size ? ` (${formatFileSize(size)})` : "";
-    const fileLink = `<div contenteditable="false" style="margin: 16px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; transition: all 0.2s; clear: both;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'"><div style="display: flex; align-items: center; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 14px; color: #6b7280;">📎</span><span style="font-size: 14px; color: #374151; font-weight: 500;">${name}${sizeText}</span></div><button onclick="window.downloadFile('${url}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do arquivo">Download</button></div></div>`;
-    insertHtmlAndRestoreCursor(fileLink);
+    const fileLink = `<div contenteditable="false" style="margin: 8px 0; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); user-select: none; transition: all 0.2s; clear: both;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'"><div style="display: flex; align-items: center; justify-content: space-between;"><div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 14px; color: #6b7280;">📎</span><span style="font-size: 14px; color: #374151; font-weight: 500;">${name}${sizeText}</span></div><button onclick="window.downloadFile('${url}', '${name}')" style="background: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'" title="Download do arquivo">Download</button></div></div>`;
+
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    // Insert file link without extra line breaks
+    execCommand("insertHTML", fileLink);
+
+    // Position cursor after file
+    setTimeout(() => {
+      const selection = window.getSelection();
+      if (selection) {
+        const range = document.createRange();
+        range.selectNodeContents(editor);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+      editor.focus();
+      handleInput();
+    }, 10);
   };
 
   const formatFileSize = (bytes: number): string => {
