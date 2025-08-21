@@ -600,8 +600,8 @@ export default function EnhancedRichTextEditor({
           margin: 0 4px 4px 0 !important;
           display: inline-block !important;
           vertical-align: top !important;
-          max-width: 180px !important;
-          width: 180px !important;
+          max-width: 120px !important;
+          width: 120px !important;
         }
 
         .rich-editor .image-container img:last-child {
