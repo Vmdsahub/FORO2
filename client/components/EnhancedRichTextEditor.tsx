@@ -131,75 +131,6 @@ export default function EnhancedRichTextEditor({
     handleInput();
   };
 
-  // Enhanced function to ensure proper cursor positioning for empty editor
-  const insertHtmlAndRestoreCursor = (html: string) => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const selection = window.getSelection();
-
-    // Special handling for empty editor
-    const editorContent = editor.innerHTML.trim();
-    const isEmpty = editorContent === "" || editorContent === "<br>";
-
-    if (isEmpty) {
-      // For empty editor, insert at the beginning and add editable space after
-      editor.innerHTML = `<div><br></div>${html}<div><br></div>`;
-
-      // Set cursor to the first line
-      const range = document.createRange();
-      const firstDiv = editor.querySelector("div");
-      if (firstDiv) {
-        range.setStart(firstDiv, 0);
-        range.collapse(true);
-
-        if (selection) {
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      }
-    } else {
-      // For non-empty editor, use standard insertion
-      if (!selection || selection.rangeCount === 0) {
-        // If no selection, place cursor at end
-        editor.focus();
-        const range = document.createRange();
-        range.selectNodeContents(editor);
-        range.collapse(false);
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-      }
-
-      // Insert the HTML
-      execCommand("insertHTML", html);
-
-      // Ensure there's always editable space after media insertion
-      setTimeout(() => {
-        const currentSelection = window.getSelection();
-        if (currentSelection && currentSelection.rangeCount > 0) {
-          const range = currentSelection.getRangeAt(0);
-
-          // Insert a line break for text editing after media
-          const lineBreak = document.createElement("div");
-          lineBreak.innerHTML = "<br>";
-          range.insertNode(lineBreak);
-
-          // Move cursor to the new line
-          range.setStartAfter(lineBreak);
-          range.collapse(true);
-
-          currentSelection.removeAllRanges();
-          currentSelection.addRange(range);
-
-          // Trigger change event
-          handleInput();
-        }
-
-        // Focus the editor
-        editor.focus();
-      }, 50); // Increased timeout for better stability
-    }
-  };
 
   const handleBold = () => execCommand("bold");
   const handleItalic = () => execCommand("italic");
@@ -741,7 +672,7 @@ export default function EnhancedRichTextEditor({
             {isEditMode ? (
               <span className="text-orange-600">
                 {" "}
-                Expansão de mídia disponível após publicar.
+                Expansão de m��dia disponível após publicar.
               </span>
             ) : (
               <span className="text-blue-600">
