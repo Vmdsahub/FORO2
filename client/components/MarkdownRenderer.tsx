@@ -65,52 +65,18 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
   // Configurar event listeners para vídeos após o render
   useEffect(() => {
-    const setupVideoListeners = () => {
-      // Find all video-preview elements (both from editor and markdown)
-      const videoElements = document.querySelectorAll('.video-preview');
-
-      videoElements.forEach((element) => {
-        // Check if already has a listener
-        if (element.hasAttribute('data-listener-added')) {
-          return;
-        }
-
-        let videoSrc = '';
-
-        // Try to get video source from data attribute (markdown generated)
-        const dataSrc = element.getAttribute('data-video-src');
-        if (dataSrc) {
-          videoSrc = dataSrc;
-        } else {
-          // Try to get video source from child video element (editor generated)
-          const videoChild = element.querySelector('video');
-          if (videoChild && videoChild.src) {
-            videoSrc = videoChild.src;
-          }
-        }
-
-        if (videoSrc) {
-          const clickHandler = (e: Event) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🎬 Clicando no vídeo:', videoSrc);
-            setModalImage({ src: videoSrc, alt: 'Vídeo', isVideo: true });
-          };
-
-          // Add listener and mark as added
-          element.addEventListener('click', clickHandler);
-          element.setAttribute('data-listener-added', 'true');
-
-          console.log('🎯 Event listener adicionado para vídeo:', videoSrc);
-        }
-      });
-    };
-
-    // Setup listeners after content changes
-    const timer = setTimeout(setupVideoListeners, 200);
+    const timer = setTimeout(() => {
+      if ((window as any).setupVideoListeners) {
+        (window as any).setupVideoListeners();
+      }
+    }, 200);
 
     // Also setup a global interval to catch any new videos
-    const interval = setInterval(setupVideoListeners, 1000);
+    const interval = setInterval(() => {
+      if ((window as any).setupVideoListeners) {
+        (window as any).setupVideoListeners();
+      }
+    }, 1000);
 
     return () => {
       clearTimeout(timer);
