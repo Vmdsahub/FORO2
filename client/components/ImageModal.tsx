@@ -172,7 +172,11 @@ export default function ImageModal({
         >
           {/* Close button */}
           <Button
-            onClick={onClose}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
             variant="ghost"
             size="sm"
             className="absolute top-4 right-4 z-20 bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
