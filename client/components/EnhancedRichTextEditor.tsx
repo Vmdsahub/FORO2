@@ -965,16 +965,45 @@ export default function EnhancedRichTextEditor({
           overflow-wrap: normal;
         }
 
-        .rich-editor .image-container img {
-          margin: 0 4px 4px 0 !important;
-          display: inline-block !important;
-          vertical-align: top !important;
-          max-width: 120px !important;
-          width: 120px !important;
+        .rich-editor .image-wrapper {
+          position: relative;
+          display: inline-block;
+          margin: 0 8px 8px 0 !important;
+          vertical-align: top;
         }
 
-        .rich-editor .image-container img:last-child {
+        .rich-editor .video-wrapper {
+          position: relative;
+          display: inline-block;
+          margin: 0 4px 4px 0 !important;
+          vertical-align: top;
+        }
+
+        .rich-editor .image-wrapper:last-child,
+        .rich-editor .video-wrapper:last-child {
           margin-right: 0 !important;
+        }
+
+        .rich-editor .image-wrapper img {
+          display: block !important;
+          max-width: 120px !important;
+          width: 120px !important;
+          margin: 0 !important;
+        }
+
+        /* Delete button styles */
+        .rich-editor .image-wrapper button,
+        .rich-editor .video-wrapper button {
+          pointer-events: auto !important;
+          user-select: none !important;
+          cursor: pointer !important;
+        }
+
+        /* Ensure delete buttons are always visible and clickable */
+        .rich-editor .image-wrapper:hover button,
+        .rich-editor .video-wrapper:hover button {
+          opacity: 1 !important;
+          transform: scale(1.05) !important;
         }
         
         /* Ensure proper spacing and cursor placement */
