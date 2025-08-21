@@ -295,17 +295,60 @@ export default function TopicView() {
                 </span>
               )}
               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                {topic.category}
+                {isEditing ? (
+                  <Input
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="h-6 text-xs w-32"
+                    placeholder="Categoria"
+                  />
+                ) : (
+                  topic.category
+                )}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-black mb-4">
-              {topic.title}
-            </h1>
+            {isEditing ? (
+              <div className="space-y-4">
+                <Input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="text-2xl font-bold"
+                  placeholder="Título do tópico"
+                />
+                <Input
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  placeholder="Descrição breve"
+                />
+              </div>
+            ) : (
+              <h1 className="text-2xl font-bold text-black mb-4">
+                {topic.title}
+              </h1>
+            )}
           </div>
 
           {/* Topic Content */}
           <div className="border-t border-gray-100 pt-4 mb-4">
-            <MarkdownRenderer content={topic.content} />
+            {isEditing ? (
+              <div className="space-y-4">
+                <EnhancedRichTextEditor
+                  value={editContent}
+                  onChange={setEditContent}
+                  placeholder="Conteúdo do tópico..."
+                />
+                <div className="flex items-center gap-3">
+                  <Button onClick={handleSaveEdit} className="bg-green-600 hover:bg-green-700">
+                    Salvar Edições
+                  </Button>
+                  <Button onClick={handleCancelEdit} variant="outline">
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <MarkdownRenderer content={topic.content} />
+            )}
           </div>
 
           {/* Actions */}
