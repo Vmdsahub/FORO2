@@ -195,7 +195,7 @@ export default function TopicView() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-black mb-4">
-            Tópico não encontrado
+            Tópico n��o encontrado
           </h2>
           <Button onClick={() => navigate("/")} variant="outline">
             Voltar ao início
@@ -249,7 +249,7 @@ export default function TopicView() {
 
           {/* Topic Content */}
           <div className="border-t border-gray-100 pt-4 mb-4">
-            <SimpleMarkdownRenderer content={topic.content} />
+            <MarkdownRenderer content={topic.content} />
           </div>
 
           {/* Actions */}
