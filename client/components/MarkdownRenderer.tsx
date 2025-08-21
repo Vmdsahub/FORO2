@@ -22,6 +22,8 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       alt: string,
       isVideo: boolean,
     ) => {
+      // Prevent opening new modal if one is being closed
+      if (isModalClosing) return;
       setModalImage({ src, alt, isVideo });
     };
 
