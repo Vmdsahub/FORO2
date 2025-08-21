@@ -412,6 +412,31 @@ export default function SimpleCommentSystem({
     }
   };
 
+  // Editar comentário
+  const handleEdit = async (commentId: string, newContent: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({
+          content: cleanContentForSaving(newContent),
+        }),
+      });
+
+      if (response.ok) {
+        await loadComments();
+      } else {
+        const data = await response.json();
+        toast.error(data.message || "Erro ao editar comentário");
+      }
+    } catch (error) {
+      toast.error("Erro ao editar comentário");
+    }
+  };
+
   // Criar comentário
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
