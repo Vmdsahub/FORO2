@@ -30,6 +30,12 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       videoElements.forEach((element, index) => {
         console.log(`🎯 Vídeo ${index + 1}:`, element);
 
+        // Skip if in edit mode
+        if (element.getAttribute("data-edit-mode") === "true") {
+          console.log(`⏭️ Pulando vídeo ${index + 1} - modo de edição`);
+          return;
+        }
+
         // Remove existing listener if present to refresh
         if (element.hasAttribute("data-listener-added")) {
           console.log(`🔄 Removendo listener antigo do vídeo ${index + 1}`);
@@ -218,7 +224,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
       return processedHtml;
     }
 
-    // Se contém elementos de m��dia, força como HTML
+    // Se contém elementos de mídia, força como HTML
     if (
       content.includes("🖼️") ||
       content.includes("🎬") ||
