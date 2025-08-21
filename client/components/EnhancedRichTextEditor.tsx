@@ -496,8 +496,11 @@ export default function EnhancedRichTextEditor({
 
     // Call global video setup function after adding the video to DOM
     setTimeout(() => {
-      if (typeof window !== "undefined" && (window as any).setupVideoListeners) {
-        console.log('🎬 Chamando setupVideoListeners após adicionar vídeo');
+      if (
+        typeof window !== "undefined" &&
+        (window as any).setupVideoListeners
+      ) {
+        console.log("🎬 Chamando setupVideoListeners após adicionar vídeo");
         (window as any).setupVideoListeners();
       }
     }, 200);

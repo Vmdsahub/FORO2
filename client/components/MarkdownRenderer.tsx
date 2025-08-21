@@ -24,28 +24,34 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
     // Also setup global video listener function
     (window as any).setupVideoListeners = () => {
-      const videoElements = document.querySelectorAll('.video-preview');
-      console.log('🔍 Procurando vídeos... Encontrados:', videoElements.length);
+      const videoElements = document.querySelectorAll(".video-preview");
+      console.log("🔍 Procurando vídeos... Encontrados:", videoElements.length);
 
       videoElements.forEach((element, index) => {
         console.log(`🎯 Vídeo ${index + 1}:`, element);
 
         // Remove existing listener if present to refresh
-        if (element.hasAttribute('data-listener-added')) {
+        if (element.hasAttribute("data-listener-added")) {
           console.log(`🔄 Removendo listener antigo do vídeo ${index + 1}`);
-          element.removeAttribute('data-listener-added');
+          element.removeAttribute("data-listener-added");
         }
 
-        let videoSrc = '';
-        const dataSrc = element.getAttribute('data-video-src');
+        let videoSrc = "";
+        const dataSrc = element.getAttribute("data-video-src");
         if (dataSrc) {
           videoSrc = dataSrc;
-          console.log(`📂 Vídeo ${index + 1} - src do data-attribute:`, videoSrc);
+          console.log(
+            `📂 Vídeo ${index + 1} - src do data-attribute:`,
+            videoSrc,
+          );
         } else {
-          const videoChild = element.querySelector('video');
+          const videoChild = element.querySelector("video");
           if (videoChild && videoChild.src) {
             videoSrc = videoChild.src;
-            console.log(`📂 Vídeo ${index + 1} - src do elemento video:`, videoSrc);
+            console.log(
+              `📂 Vídeo ${index + 1} - src do elemento video:`,
+              videoSrc,
+            );
           }
         }
 
@@ -54,39 +60,50 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const clickHandler = (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🎬 CLIQUE DETECTADO! Abrindo vídeo:', videoSrc);
-            setModalImage({ src: videoSrc, alt: 'Vídeo', isVideo: true });
+            console.log("🎬 CLIQUE DETECTADO! Abrindo vídeo:", videoSrc);
+            setModalImage({ src: videoSrc, alt: "Vídeo", isVideo: true });
           };
 
           // Remove any existing listeners first
-          element.removeEventListener('click', clickHandler);
+          element.removeEventListener("click", clickHandler);
           // Add new listener
-          element.addEventListener('click', clickHandler);
-          element.setAttribute('data-listener-added', 'true');
-          console.log(`✅ Event listener adicionado para vídeo ${index + 1}:`, videoSrc);
+          element.addEventListener("click", clickHandler);
+          element.setAttribute("data-listener-added", "true");
+          console.log(
+            `✅ Event listener adicionado para vídeo ${index + 1}:`,
+            videoSrc,
+          );
         } else {
           console.log(`❌ Vídeo ${index + 1} - não foi possível encontrar src`);
           console.log(`🔍 Debug - elemento:`, element);
-          console.log(`🔍 Debug - data-video-src:`, element.getAttribute('data-video-src'));
-          console.log(`🔍 Debug - video child:`, element.querySelector('video'));
+          console.log(
+            `🔍 Debug - data-video-src:`,
+            element.getAttribute("data-video-src"),
+          );
+          console.log(
+            `🔍 Debug - video child:`,
+            element.querySelector("video"),
+          );
         }
       });
     };
 
     // Add global debug function for testing
     (window as any).debugVideoListeners = () => {
-      const videos = document.querySelectorAll('.video-preview');
-      console.log('🔍 DEBUG: Total de vídeos encontrados:', videos.length);
+      const videos = document.querySelectorAll(".video-preview");
+      console.log("🔍 DEBUG: Total de vídeos encontrados:", videos.length);
       videos.forEach((video, i) => {
         console.log(`Vídeo ${i + 1}:`, {
           element: video,
-          hasListener: video.hasAttribute('data-listener-added'),
-          dataSrc: video.getAttribute('data-video-src'),
-          videoChild: video.querySelector('video'),
-          videoSrc: video.querySelector('video')?.src
+          hasListener: video.hasAttribute("data-listener-added"),
+          dataSrc: video.getAttribute("data-video-src"),
+          videoChild: video.querySelector("video"),
+          videoSrc: video.querySelector("video")?.src,
         });
       });
-      console.log('💡 Digite "setupVideoListeners()" para reconfigurar os listeners');
+      console.log(
+        '💡 Digite "setupVideoListeners()" para reconfigurar os listeners',
+      );
     };
 
     return () => {
@@ -98,10 +115,10 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
   // Configurar event listeners para vídeos após o render
   useEffect(() => {
-    console.log('🚀 MarkdownRenderer useEffect executado - content mudou');
+    console.log("🚀 MarkdownRenderer useEffect executado - content mudou");
 
     const timer = setTimeout(() => {
-      console.log('⏰ Executando setupVideoListeners após 200ms');
+      console.log("⏰ Executando setupVideoListeners após 200ms");
       if ((window as any).setupVideoListeners) {
         (window as any).setupVideoListeners();
       }

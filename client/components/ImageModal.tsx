@@ -1,6 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Play, Pause, Volume2, VolumeX, Maximize } from "lucide-react";
+import {
+  X,
+  Download,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+} from "lucide-react";
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -133,7 +141,7 @@ export default function ImageModal({
         (video as any).msRequestFullscreen();
       }
     } catch (error) {
-      console.error('Erro ao entrar em fullscreen:', error);
+      console.error("Erro ao entrar em fullscreen:", error);
     }
   };
 
@@ -343,11 +351,11 @@ export default function ImageModal({
             </div>
           )}
         </div>
-
       </div>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .slider::-webkit-slider-thumb {
           appearance: none;
           height: 12px;
@@ -367,8 +375,9 @@ export default function ImageModal({
           border: none;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        `
-      }} />
+        `,
+        }}
+      />
     </div>
   );
 }
