@@ -191,30 +191,17 @@ export default function EnhancedRichTextEditor({
     const imageContainers = editor.querySelectorAll('.image-container');
     const lastImageContainer = imageContainers[imageContainers.length - 1] as HTMLElement;
 
-    // Check if we should group images
+    // Simple check: group if last image container is the last or second-to-last element
     let shouldGroupImages = false;
 
     if (lastImageContainer) {
-      // Check if the last image container is the last meaningful element
-      // or if there's only empty content (BR tags, empty text) after it
-      let lastMeaningfulElement = null;
-      for (let i = editor.children.length - 1; i >= 0; i--) {
-        const child = editor.children[i];
-        if (child === lastImageContainer) {
-          lastMeaningfulElement = lastImageContainer;
-          break;
-        }
-        // Skip empty divs with just BR
-        if (child.tagName === 'DIV' && child.innerHTML === '<br>') {
-          continue;
-        }
-        // If we find meaningful content after the image, don't group
-        if (child.textContent?.trim()) {
-          break;
-        }
-      }
+      const lastChild = editor.lastElementChild;
+      const secondLastChild = lastChild?.previousElementSibling;
 
-      shouldGroupImages = lastMeaningfulElement === lastImageContainer;
+      shouldGroupImages = (lastImageContainer === lastChild) ||
+                         (lastImageContainer === secondLastChild &&
+                          lastChild?.tagName === 'DIV' &&
+                          lastChild.innerHTML === '<br>');
     }
 
     if (shouldGroupImages && lastImageContainer) {
