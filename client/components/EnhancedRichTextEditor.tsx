@@ -776,22 +776,34 @@ export default function EnhancedRichTextEditor({
           line-height: 1.7;
         }
 
-        /* Prevent videos from being draggable and clickable during editing */
+        /* Prevent ALL interactions with media elements in rich editor */
+        .rich-editor .video-preview,
+        .rich-editor .image-container img,
+        .rich-editor .image-container {
+          pointer-events: none !important;
+          user-select: none !important;
+          cursor: default !important;
+        }
+
+        /* Specific styles for edit mode elements */
         .rich-editor .video-preview[data-edit-mode="true"] {
-          pointer-events: none;
-          user-select: none;
-          cursor: default;
+          pointer-events: none !important;
+          user-select: none !important;
+          cursor: default !important;
         }
 
         /* Disable ALL pointer events for video elements in edit mode */
+        .rich-editor .video-preview video,
         .rich-editor .video-preview[data-edit-mode="true"] video {
-          pointer-events: none;
+          pointer-events: none !important;
+          cursor: default !important;
         }
 
         /* Disable ALL pointer events for play overlay in edit mode */
+        .rich-editor .video-preview > div:last-child,
         .rich-editor .video-preview[data-edit-mode="true"] > div:last-child {
-          pointer-events: none;
-          cursor: default;
+          pointer-events: none !important;
+          cursor: default !important;
           opacity: 0.5;
         }
         
