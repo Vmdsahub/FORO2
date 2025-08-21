@@ -279,20 +279,38 @@ export default function ImageModal({
                     </span>
                   </div>
 
-                  {/* Download button */}
-                  <Button
-                    onClick={handleDownload}
-                    variant="ghost"
-                    size="sm"
-                    className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.15)",
-                      backdropFilter: "blur(10px)",
-                    }}
-                    title="Download do vídeo"
-                  >
-                    <Download className="h-4 w-4" />
-                  </Button>
+                  {/* Controls buttons */}
+                  <div className="flex items-center gap-2">
+                    {/* Fullscreen button */}
+                    <Button
+                      onClick={handleFullscreen}
+                      variant="ghost"
+                      size="sm"
+                      className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
+                      style={{
+                        background: "rgba(255, 255, 255, 0.15)",
+                        backdropFilter: "blur(10px)",
+                      }}
+                      title="Tela cheia"
+                    >
+                      <Maximize className="h-4 w-4" />
+                    </Button>
+
+                    {/* Download button */}
+                    <Button
+                      onClick={handleDownload}
+                      variant="ghost"
+                      size="sm"
+                      className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
+                      style={{
+                        background: "rgba(255, 255, 255, 0.15)",
+                        backdropFilter: "blur(10px)",
+                      }}
+                      title="Download do vídeo"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
