@@ -196,7 +196,7 @@ function buildCommentTree(allComments: Comment[]): Comment[] {
     }
   });
 
-  // 5. Ordenar por data/hora (função simples)
+  // 5. Ordenar por data/hora (funç��o simples)
   function parseDateTime(date: string, time: string): number {
     try {
       if (date.includes("/")) {
@@ -832,6 +832,76 @@ export function getForumCommentLikesForUser(userId: string): number {
 
   return totalLikes;
 }
+
+export const handleEditTopic: RequestHandler = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Autenticação necessária" });
+  }
+
+  const { topicId } = req.params;
+  const topic = topics.get(topicId);
+
+  if (!topic) {
+    return res.status(404).json({ message: "Tópico não encontrado" });
+  }
+
+  // Verificar se o usuário é o autor do tópico
+  if (topic.authorId !== req.user.id) {
+    return res.status(403).json({ message: "Você só pode editar seus próprios tópicos" });
+  }
+
+  try {
+    const validatedData = editTopicSchema.parse(req.body);
+
+    // Atualizar apenas os campos fornecidos
+    if (validatedData.title !== undefined) {
+      topic.title = validatedData.title;
+    }
+    if (validatedData.description !== undefined) {
+      topic.description = validatedData.description;
+    }
+    if (validatedData.content !== undefined) {
+      topic.content = validatedData.content;
+    }
+    if (validatedData.category !== undefined) {
+      topic.category = validatedData.category;
+    }
+
+    topic.updatedAt = new Date().toISOString();
+
+    res.json({
+      message: "Tópico editado com sucesso",
+      topic: {
+        id: topic.id,
+        title: topic.title,
+        description: topic.description,
+        content: topic.content,
+        category: topic.category,
+        author: topic.author,
+        authorId: topic.authorId,
+        authorAvatar: topic.authorAvatar,
+        createdAt: topic.createdAt,
+        updatedAt: topic.updatedAt,
+        views: topic.views,
+        likes: getLikeCount(topic.id),
+        isLiked: likes.get(topic.id)?.has(req.user.id) || false,
+        replies: getTopicCommentStats(topic.id).commentsCount,
+        lastPost: topic.lastPost,
+        isPinned: topic.isPinned,
+        isHot: topic.isHot,
+      },
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Dados inválidos",
+        errors: error.errors,
+      });
+    }
+    console.error("Erro ao editar tópico:", error);
+    res.status(500).json({ message: "Erro interno do servidor" });
+  }
+};
 
 export const handleDeleteTopic: RequestHandler = (req, res) => {
   if (!req.user) {
