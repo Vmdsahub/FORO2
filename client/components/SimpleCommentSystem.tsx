@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import UserHoverCard from "@/components/UserHoverCard";
 import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
+import { cleanContentForSaving } from "@/utils/contentCleaner";
 import ReportModal from "@/components/ReportModal";
 
 interface Comment {
@@ -225,7 +226,7 @@ export default function SimpleCommentSystem({
       const response = await fetch(`/api/comments/${topicId}`, { headers });
       if (response.ok) {
         const data = await response.json();
-        // Filtra apenas comentários raiz (sem parentId) e ordena por data
+        // Filtra apenas coment��rios raiz (sem parentId) e ordena por data
         const rootComments = data.comments
           .filter((comment: any) => !comment.parentId)
           .sort(
