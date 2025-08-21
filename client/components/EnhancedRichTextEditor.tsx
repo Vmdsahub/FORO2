@@ -187,6 +187,13 @@ export default function EnhancedRichTextEditor({
     const editor = editorRef.current;
     if (!editor) return;
 
+    // Clean up empty divs at the end first
+    while (editor.lastElementChild &&
+           editor.lastElementChild.tagName === 'DIV' &&
+           editor.lastElementChild.innerHTML === '<br>') {
+      editor.removeChild(editor.lastElementChild);
+    }
+
     // Find the last image container in the editor
     const imageContainers = editor.querySelectorAll('.image-container');
     const lastImageContainer = imageContainers[imageContainers.length - 1] as HTMLElement;
