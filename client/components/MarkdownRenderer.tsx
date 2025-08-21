@@ -27,6 +27,37 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     };
   }, []);
 
+  // Configurar event listeners para vídeos após o render
+  useEffect(() => {
+    const setupVideoListeners = () => {
+      const videoElements = document.querySelectorAll('.video-preview[data-video-src]');
+
+      videoElements.forEach((element) => {
+        const videoSrc = element.getAttribute('data-video-src');
+        if (videoSrc) {
+          const clickHandler = (e: Event) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🎬 Clicando no vídeo:', videoSrc);
+            setModalImage({ src: videoSrc, alt: 'Vídeo', isVideo: true });
+          };
+
+          // Remove existing listener to avoid duplicates
+          element.removeEventListener('click', clickHandler);
+          // Add new listener
+          element.addEventListener('click', clickHandler);
+        }
+      });
+    };
+
+    // Setup listeners after content changes
+    const timer = setTimeout(setupVideoListeners, 100);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [content]);
+
   const isHtmlContent = (text: string): boolean => {
     // Verificar se é HTML válido do editor
     const htmlTags = [
