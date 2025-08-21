@@ -10,6 +10,7 @@ import SimpleCommentSystem from "@/components/SimpleCommentSystem";
 import UserPointsBadge from "@/components/UserPointsBadge";
 import UserHoverCard from "@/components/UserHoverCard";
 import ReportModal from "@/components/ReportModal";
+import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
 
 interface Topic {
   id: string;
