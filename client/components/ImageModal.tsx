@@ -31,6 +31,7 @@ export default function ImageModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreenAvailable, setIsFullscreenAvailable] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -45,6 +46,26 @@ export default function ImageModal({
     } else {
       // Temporarily disable pointer events to prevent unwanted clicks
       document.body.style.pointerEvents = "auto";
+
+      // Check fullscreen availability
+      const checkFullscreenAvailability = async () => {
+        if (!document.fullscreenEnabled) {
+          setIsFullscreenAvailable(false);
+          return;
+        }
+
+        try {
+          const permissions = await navigator.permissions?.query?.({ name: 'fullscreen' as any });
+          if (permissions && permissions.state === 'denied') {
+            setIsFullscreenAvailable(false);
+          }
+        } catch {
+          // If permissions API is not available, assume fullscreen might work
+          setIsFullscreenAvailable(true);
+        }
+      };
+
+      checkFullscreenAvailability();
     }
   }, [isOpen]);
 
