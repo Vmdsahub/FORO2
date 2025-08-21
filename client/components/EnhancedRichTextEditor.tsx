@@ -65,29 +65,23 @@ export default function EnhancedRichTextEditor({
 
   // Configure global functions - conditional based on edit mode
   useEffect(() => {
-    (window as any).openImageModal = (
-      src: string,
-      alt: string,
-      isVideo: boolean,
-    ) => {
-      // Only allow media expansion when NOT in edit mode (i.e., when content is already posted)
-      if (!isEditMode) {
-        setModalImage({ src, alt, isVideo });
-      }
-    };
-
-    (window as any).downloadFile = (url: string, filename: string) => {
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
+    // Only setup modal and download functions in edit mode
+    if (isEditMode) {
+      (window as any).downloadFile = (url: string, filename: string) => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+    }
 
     return () => {
-      delete (window as any).openImageModal;
-      delete (window as any).downloadFile;
+      // Clean up only the functions we created
+      if (isEditMode) {
+        delete (window as any).downloadFile;
+      }
     };
   }, [isEditMode]);
 
