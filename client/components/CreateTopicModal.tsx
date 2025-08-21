@@ -145,14 +145,11 @@ export default function CreateTopicModal({
         body: JSON.stringify(topicData),
       });
 
-      // Handle response - read body only once
-      const responseText = await response.text();
       console.log("Response status:", response.status);
-      console.log("Response text:", responseText);
 
       if (response.ok) {
         try {
-          const newTopic = JSON.parse(responseText);
+          const newTopic = await response.json();
           console.log("Tópico criado:", newTopic);
           toast.success("Tópico criado com sucesso!");
           setFormData({ title: "", description: "", content: "" });
@@ -166,30 +163,26 @@ export default function CreateTopicModal({
           toast.error("Erro ao processar resposta do servidor");
         }
       } else {
-        let errorData;
+        let displayMessage = "Erro ao criar tópico";
         try {
-          errorData = responseText
-            ? JSON.parse(responseText)
-            : { message: "Erro desconhecido" };
+          const errorData = await response.json();
+          console.error("Erro ao criar tópico:", errorData);
+
+          if (errorData?.message) {
+            displayMessage = errorData.message;
+          } else if (errorData?.error) {
+            displayMessage = errorData.error;
+          } else if (errorData?.errors && Array.isArray(errorData.errors)) {
+            displayMessage = errorData.errors.join(", ");
+          }
         } catch (parseError) {
           console.error("Error parsing error response:", parseError);
-          errorData = {
-            message:
-              responseText ||
-              `Erro HTTP ${response.status}: ${response.statusText}`,
-          };
-        }
-
-        console.error("Erro ao criar tópico:", errorData);
-
-        // Better error message handling
-        let displayMessage = "Erro ao criar tópico";
-        if (errorData?.message) {
-          displayMessage = errorData.message;
-        } else if (errorData?.error) {
-          displayMessage = errorData.error;
-        } else if (typeof errorData === "string") {
-          displayMessage = errorData;
+          try {
+            const errorText = await response.text();
+            displayMessage = errorText || `Erro HTTP ${response.status}: ${response.statusText}`;
+          } catch {
+            displayMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
+          }
         }
 
         toast.error(displayMessage);
