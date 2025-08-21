@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ImageModal from "@/components/ImageModal";
+import { cleanContentForDisplay } from "@/utils/contentCleaner";
 
 interface MarkdownRendererProps {
   content: string;
