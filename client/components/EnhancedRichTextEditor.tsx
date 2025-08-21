@@ -256,6 +256,65 @@ export default function EnhancedRichTextEditor({
     const editor = editorRef.current;
     if (!editor) return;
 
+    // Find the last image container in the editor
+    const imageContainers = editor.querySelectorAll('.image-container');
+    const lastImageContainer = imageContainers[imageContainers.length - 1] as HTMLElement;
+
+    // Check if we should group images (if last element is an image container and no text between cursor and image)
+    let shouldGroupImages = false;
+
+    if (lastImageContainer) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const currentPosition = range.startContainer;
+
+        // Check if cursor is right after the last image container or in empty space after it
+        const isAfterLastImage = lastImageContainer === editor.lastElementChild ||
+          (lastImageContainer.nextSibling &&
+           (lastImageContainer.nextSibling.nodeType === Node.TEXT_NODE &&
+            lastImageContainer.nextSibling.textContent?.trim() === '') ||
+           (lastImageContainer.nextSibling.nodeType === Node.ELEMENT_NODE &&
+            (lastImageContainer.nextSibling as HTMLElement).tagName === 'BR'));
+
+        shouldGroupImages = isAfterLastImage;
+      } else {
+        // If no selection, check if last element is image container
+        shouldGroupImages = lastImageContainer === editor.lastElementChild;
+      }
+    }
+
+    if (shouldGroupImages && lastImageContainer) {
+      // Calculate how many images are already in the container
+      const existingImages = lastImageContainer.querySelectorAll('img');
+      const containerWidth = 400; // approximate container width
+      const imageWidth = 180 + 8; // image width + margin
+      const maxImagesPerRow = Math.floor(containerWidth / imageWidth);
+
+      if (existingImages.length < maxImagesPerRow) {
+        // Add image to existing container (side by side)
+        const imageElement = document.createElement('img');
+        imageElement.src = src;
+        imageElement.alt = alt;
+        imageElement.style.cssText = "max-width: 180px; width: 180px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+        lastImageContainer.appendChild(imageElement);
+
+        // Position cursor after the container
+        const selection = window.getSelection();
+        if (selection) {
+          const range = document.createRange();
+          range.setStartAfter(lastImageContainer);
+          range.collapse(true);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+
+        handleInput();
+        return;
+      }
+    }
+
+    // Create new image container
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
       editor.focus();
@@ -266,66 +325,46 @@ export default function EnhancedRichTextEditor({
       selection?.addRange(range);
     }
 
-    // Check if the previous element is an image container to group images
-    const range = selection.getRangeAt(0);
-    const currentNode = range.startContainer;
-    let parentNode = currentNode.nodeType === Node.TEXT_NODE ? currentNode.parentNode : currentNode;
+    // Clean up any trailing BR tags before inserting
+    const range = selection!.getRangeAt(0);
+    let insertPosition = range.startContainer;
 
-    // Find the last image container to check if we should group images
-    let lastImageContainer: HTMLElement | null = null;
-    let walker = document.createTreeWalker(
-      editor,
-      NodeFilter.SHOW_ELEMENT,
-      (node) => {
-        const element = node as HTMLElement;
-        return element.classList.contains('image-container') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
-      }
-    );
-
-    while (walker.nextNode()) {
-      lastImageContainer = walker.currentNode as HTMLElement;
+    // If we're in a text node, move to parent
+    if (insertPosition.nodeType === Node.TEXT_NODE) {
+      insertPosition = insertPosition.parentNode!;
     }
 
-    // Check if cursor is right after an image container or if the last element is an image
-    const shouldGroupImages = lastImageContainer && (
-      parentNode === lastImageContainer ||
-      (parentNode && parentNode.previousElementSibling === lastImageContainer) ||
-      editor.lastElementChild === lastImageContainer
-    );
-
-    if (shouldGroupImages && lastImageContainer) {
-      // Add image to existing container (side by side)
-      const imageElement = `<img src="${src}" alt="${alt}" style="max-width: 180px; width: 180px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;" />`;
-      lastImageContainer.insertAdjacentHTML('beforeend', imageElement);
-    } else {
-      // Create new image container
-      const imageContainer = `<div class="image-container" contenteditable="false" style="margin: 8px 0; text-align: center; user-select: none; line-height: 0;"><img src="${src}" alt="${alt}" style="max-width: 180px; width: 180px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;" /></div>`;
-
-      // Insert without extra line break
-      execCommand("insertHTML", imageContainer);
+    // Remove any empty BR tags at the end
+    while (editor.lastChild && editor.lastChild.nodeType === Node.ELEMENT_NODE &&
+           (editor.lastChild as HTMLElement).tagName === 'BR') {
+      editor.removeChild(editor.lastChild);
     }
 
-    // Position cursor after the image container for continued editing
+    // Create the image container
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'image-container';
+    imageContainer.contentEditable = 'false';
+    imageContainer.style.cssText = 'margin: 8px 0; text-align: center; user-select: none; line-height: 0;';
+
+    const imageElement = document.createElement('img');
+    imageElement.src = src;
+    imageElement.alt = alt;
+    imageElement.style.cssText = "max-width: 180px; width: 180px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+
+    imageContainer.appendChild(imageElement);
+
+    // Insert the container at the end of the editor
+    editor.appendChild(imageContainer);
+
+    // Position cursor after the image container - only add space if needed for typing
     setTimeout(() => {
-      const allImageContainers = editor.querySelectorAll('.image-container');
-      const lastContainer = allImageContainers[allImageContainers.length - 1];
-
-      if (lastContainer && selection) {
+      const selection = window.getSelection();
+      if (selection) {
         const range = document.createRange();
-        range.setStartAfter(lastContainer);
+        range.setStartAfter(imageContainer);
         range.collapse(true);
         selection.removeAllRanges();
         selection.addRange(range);
-
-        // Ensure there's a place to type after the image
-        if (!lastContainer.nextSibling || lastContainer.nextSibling.nodeType === Node.ELEMENT_NODE) {
-          const textNode = document.createTextNode('\u00A0'); // Non-breaking space
-          lastContainer.insertAdjacentElement('afterend', document.createElement('br'));
-          range.setStartAfter(lastContainer.nextSibling!);
-          range.collapse(true);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
       }
 
       editor.focus();
