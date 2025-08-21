@@ -154,10 +154,18 @@ function CommentItem({
                   placeholder="Editar comentário..."
                 />
                 <div className="flex items-center gap-2">
-                  <Button onClick={handleSaveEdit} size="sm" className="bg-green-600 hover:bg-green-700">
+                  <Button
+                    onClick={handleSaveEdit}
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700"
+                  >
                     Salvar
                   </Button>
-                  <Button onClick={handleCancelEdit} size="sm" variant="outline">
+                  <Button
+                    onClick={handleCancelEdit}
+                    size="sm"
+                    variant="outline"
+                  >
                     Cancelar
                   </Button>
                 </div>

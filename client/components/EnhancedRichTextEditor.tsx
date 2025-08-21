@@ -241,7 +241,8 @@ export default function EnhancedRichTextEditor({
         // Adicionar lixeira para excluir imagem apenas em modo de edição
         if (isEditMode) {
           const imageWrapper = document.createElement("div");
-          imageWrapper.style.cssText = "display: inline-block; position: relative; margin: 0 8px 8px 0;";
+          imageWrapper.style.cssText =
+            "display: inline-block; position: relative; margin: 0 8px 8px 0;";
 
           const deleteButton = document.createElement("button");
           deleteButton.innerHTML = "🗑️";
@@ -325,7 +326,8 @@ export default function EnhancedRichTextEditor({
     // Adicionar lixeira para excluir imagem apenas em modo de edição
     if (isEditMode) {
       const imageWrapper = document.createElement("div");
-      imageWrapper.style.cssText = "display: inline-block; position: relative; margin: 0 8px 8px 0;";
+      imageWrapper.style.cssText =
+        "display: inline-block; position: relative; margin: 0 8px 8px 0;";
 
       const deleteButton = document.createElement("button");
       deleteButton.innerHTML = "🗑️";

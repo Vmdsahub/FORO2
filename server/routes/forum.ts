@@ -847,7 +847,9 @@ export const handleEditTopic: RequestHandler = (req, res) => {
 
   // Verificar se o usuário é o autor do tópico
   if (topic.authorId !== req.user.id) {
-    return res.status(403).json({ message: "Você só pode editar seus próprios tópicos" });
+    return res
+      .status(403)
+      .json({ message: "Você só pode editar seus próprios tópicos" });
   }
 
   try {

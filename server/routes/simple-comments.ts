@@ -450,7 +450,9 @@ export const editComment: RequestHandler = (req, res) => {
 
     // Verificar se o usuário é o autor do comentário
     if (comment.authorId !== req.user.id) {
-      return res.status(403).json({ message: "Você só pode editar seus próprios comentários" });
+      return res
+        .status(403)
+        .json({ message: "Você só pode editar seus próprios comentários" });
     }
 
     const validatedData = editCommentSchema.parse(req.body);
