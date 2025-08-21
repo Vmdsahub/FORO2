@@ -389,7 +389,7 @@ export default function EnhancedRichTextEditor({
         const videoPreview = document.createElement("div");
         videoPreview.className = "video-preview";
         videoPreview.style.cssText =
-          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 4px; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
 
         // Create video element for thumbnail
         const videoElement = document.createElement("video");
@@ -464,7 +464,7 @@ export default function EnhancedRichTextEditor({
     const videoPreview = document.createElement("div");
     videoPreview.className = "video-preview";
     videoPreview.style.cssText =
-      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 4px; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
 
     // Create video element for thumbnail
     const videoElement = document.createElement("video");
