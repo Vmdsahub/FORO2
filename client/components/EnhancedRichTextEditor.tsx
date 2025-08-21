@@ -380,21 +380,24 @@ export default function EnhancedRichTextEditor({
         videoElement.muted = true;
         videoElement.preload = "metadata";
 
-        // Create simple glassmorphism play button overlay
+        // Create pure glassmorphism play button overlay
         const playOverlay = document.createElement('div');
         playOverlay.style.cssText = "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
         playOverlay.innerHTML = `
-          <svg width="24" height="24" viewBox="0 0 24 24" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-radius: 4px; padding: 8px; border: 1px solid rgba(255,255,255,0.3);">
-            <path d="M8 5v14l11-7z" fill="rgba(0,0,0,0.8)"/>
+          <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
+            <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
           </svg>
         `;
 
         if (!isEditMode) {
-          videoPreview.onclick = () => {
-            if (window.openImageModal) {
-              window.openImageModal(src, name, true);
+          const clickHandler = () => {
+            console.log('Video clicked:', src, name);
+            if (typeof window !== 'undefined' && (window as any).openImageModal) {
+              (window as any).openImageModal(src, name, true);
             }
           };
+          videoPreview.addEventListener('click', clickHandler);
+          playOverlay.addEventListener('click', clickHandler);
         }
 
         videoPreview.appendChild(videoElement);
