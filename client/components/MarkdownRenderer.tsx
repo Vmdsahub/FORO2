@@ -93,14 +93,21 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   useEffect(() => {
     // Only set if not already defined to avoid conflicts with RichTextEditor
     if (!(window as any).openImageModal) {
-      (window as any).openImageModal = (src: string, alt: string, isVideo: boolean) => {
+      (window as any).openImageModal = (
+        src: string,
+        alt: string,
+        isVideo: boolean,
+      ) => {
         setModalImage({ src, alt, isVideo });
       };
     }
 
     return () => {
       // Only clean up if we were the ones who set it
-      if ((window as any).openImageModal && !document.querySelector('.rich-editor')) {
+      if (
+        (window as any).openImageModal &&
+        !document.querySelector(".rich-editor")
+      ) {
         delete (window as any).openImageModal;
       }
     };
