@@ -51,9 +51,10 @@ export default function MediaClickHandler({
       videos.forEach((video) => {
         const videoEl = video as HTMLElement;
 
-        // Skip if already has click handler or is in edit mode
+        // Skip if already has click handler, is in edit mode, or inside rich editor
         if (videoEl.getAttribute("data-click-handled") === "true" ||
-            videoEl.getAttribute("data-edit-mode") === "true") {
+            videoEl.getAttribute("data-edit-mode") === "true" ||
+            videoEl.closest('.rich-editor')) {
           return;
         }
 
