@@ -42,16 +42,16 @@ export default function ImageModal({
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
 
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('durationchange', handleDurationChange);
-    video.addEventListener('play', handlePlay);
-    video.addEventListener('pause', handlePause);
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    video.addEventListener("durationchange", handleDurationChange);
+    video.addEventListener("play", handlePlay);
+    video.addEventListener("pause", handlePause);
 
     return () => {
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('durationchange', handleDurationChange);
-      video.removeEventListener('play', handlePlay);
-      video.removeEventListener('pause', handlePause);
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+      video.removeEventListener("durationchange", handleDurationChange);
+      video.removeEventListener("play", handlePlay);
+      video.removeEventListener("pause", handlePause);
     };
   }, [isOpen]);
 
@@ -96,7 +96,7 @@ export default function ImageModal({
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   const handleMouseMove = () => {
@@ -112,9 +112,9 @@ export default function ImageModal({
   };
 
   const handleDownload = () => {
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = src;
-    link.download = alt || (isVideo ? 'video' : 'image');
+    link.download = alt || (isVideo ? "video" : "image");
     link.click();
   };
 
@@ -133,12 +133,12 @@ export default function ImageModal({
     >
       <div className="relative max-w-[90vw] max-h-[90vh] rounded-2xl overflow-hidden">
         {/* Glass container */}
-        <div 
+        <div
           className="relative bg-black bg-opacity-20 backdrop-blur-xl border border-white border-opacity-20 rounded-2xl overflow-hidden"
           style={{
-            background: 'rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(20px) saturate(180%)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            background: "rgba(0, 0, 0, 0.1)",
+            backdropFilter: "blur(20px) saturate(180%)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
           }}
         >
           {/* Close button */}
@@ -148,8 +148,8 @@ export default function ImageModal({
             size="sm"
             className="absolute top-4 right-4 z-20 bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
             style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(10px)',
+              background: "rgba(255, 255, 255, 0.15)",
+              backdropFilter: "blur(10px)",
             }}
           >
             <X className="h-5 w-5" />
@@ -157,7 +157,7 @@ export default function ImageModal({
 
           {/* Content */}
           {isVideo ? (
-            <div 
+            <div
               className="relative"
               onMouseMove={handleMouseMove}
               onMouseLeave={() => setShowControls(false)}
@@ -165,7 +165,11 @@ export default function ImageModal({
               <video
                 ref={videoRef}
                 className="max-w-full max-h-[80vh] object-contain rounded-2xl"
-                style={{ display: "block", minWidth: "400px", minHeight: "300px" }}
+                style={{
+                  display: "block",
+                  minWidth: "400px",
+                  minHeight: "300px",
+                }}
                 onClick={togglePlay}
               >
                 <source src={src} type="video/mp4" />
@@ -176,13 +180,14 @@ export default function ImageModal({
               </video>
 
               {/* Glass controls overlay */}
-              <div 
+              <div
                 className={`absolute bottom-0 left-0 right-0 p-4 transition-opacity duration-300 ${
-                  showControls ? 'opacity-100' : 'opacity-0'
+                  showControls ? "opacity-100" : "opacity-0"
                 }`}
                 style={{
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3), transparent)',
-                  backdropFilter: 'blur(10px)',
+                  background:
+                    "linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3), transparent)",
+                  backdropFilter: "blur(10px)",
                 }}
               >
                 {/* Progress bar */}
@@ -195,7 +200,7 @@ export default function ImageModal({
                     onChange={handleSeek}
                     className="w-full h-1 bg-white bg-opacity-30 rounded-lg appearance-none cursor-pointer slider"
                     style={{
-                      background: `linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ${(currentTime / duration) * 100}%, rgba(255,255,255,0.3) ${(currentTime / duration) * 100}%, rgba(255,255,255,0.3) 100%)`
+                      background: `linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ${(currentTime / duration) * 100}%, rgba(255,255,255,0.3) ${(currentTime / duration) * 100}%, rgba(255,255,255,0.3) 100%)`,
                     }}
                   />
                 </div>
@@ -210,11 +215,15 @@ export default function ImageModal({
                       size="sm"
                       className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
                       style={{
-                        background: 'rgba(255, 255, 255, 0.15)',
-                        backdropFilter: 'blur(10px)',
+                        background: "rgba(255, 255, 255, 0.15)",
+                        backdropFilter: "blur(10px)",
                       }}
                     >
-                      {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      {isPlaying ? (
+                        <Pause className="h-4 w-4" />
+                      ) : (
+                        <Play className="h-4 w-4" />
+                      )}
                     </Button>
 
                     {/* Volume */}
@@ -225,11 +234,15 @@ export default function ImageModal({
                         size="sm"
                         className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-8 h-8 p-0"
                         style={{
-                          background: 'rgba(255, 255, 255, 0.15)',
-                          backdropFilter: 'blur(10px)',
+                          background: "rgba(255, 255, 255, 0.15)",
+                          backdropFilter: "blur(10px)",
                         }}
                       >
-                        {isMuted ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                        {isMuted ? (
+                          <VolumeX className="h-3 w-3" />
+                        ) : (
+                          <Volume2 className="h-3 w-3" />
+                        )}
                       </Button>
                       <input
                         type="range"
@@ -240,7 +253,7 @@ export default function ImageModal({
                         onChange={handleVolumeChange}
                         className="w-16 h-1 bg-white bg-opacity-30 rounded-lg appearance-none cursor-pointer"
                         style={{
-                          background: `linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ${volume * 100}%, rgba(255,255,255,0.3) ${volume * 100}%, rgba(255,255,255,0.3) 100%)`
+                          background: `linear-gradient(to right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) ${volume * 100}%, rgba(255,255,255,0.3) ${volume * 100}%, rgba(255,255,255,0.3) 100%)`,
                         }}
                       />
                     </div>
@@ -258,8 +271,8 @@ export default function ImageModal({
                     size="sm"
                     className="bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.15)',
-                      backdropFilter: 'blur(10px)',
+                      background: "rgba(255, 255, 255, 0.15)",
+                      backdropFilter: "blur(10px)",
                     }}
                     title="Download do vídeo"
                   >
@@ -283,8 +296,8 @@ export default function ImageModal({
                 size="sm"
                 className="absolute top-4 left-4 z-20 bg-white bg-opacity-20 backdrop-blur-md text-white hover:bg-opacity-30 border border-white border-opacity-30 rounded-full w-10 h-10 p-0"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.15)',
-                  backdropFilter: 'blur(10px)',
+                  background: "rgba(255, 255, 255, 0.15)",
+                  backdropFilter: "blur(10px)",
                 }}
                 title="Download da imagem"
               >
@@ -296,12 +309,12 @@ export default function ImageModal({
 
         {/* Caption */}
         {alt && (
-          <div 
+          <div
             className="mt-4 p-3 rounded-xl text-center"
             style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              background: "rgba(255, 255, 255, 0.1)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
             }}
           >
             <p className="text-sm text-white">
@@ -321,7 +334,7 @@ export default function ImageModal({
           cursor: pointer;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        
+
         .slider::-moz-range-thumb {
           height: 12px;
           width: 12px;

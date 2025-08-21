@@ -342,7 +342,7 @@
     width: 120px !important;
     border-radius: 8px !important;
     border: 1px solid #e5e7eb !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
   }
@@ -368,7 +368,7 @@
   .image-container img:hover,
   .image-container .video-preview:hover {
     transform: scale(1.02) !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
   }
 
   /* Video preview specific styles */

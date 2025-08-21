@@ -131,7 +131,6 @@ export default function EnhancedRichTextEditor({
     handleInput();
   };
 
-
   const handleBold = () => execCommand("bold");
   const handleItalic = () => execCommand("italic");
   const handleUnderline = () => execCommand("underline");
@@ -188,15 +187,19 @@ export default function EnhancedRichTextEditor({
     if (!editor) return;
 
     // Clean up empty divs at the end first
-    while (editor.lastElementChild &&
-           editor.lastElementChild.tagName === 'DIV' &&
-           editor.lastElementChild.innerHTML === '<br>') {
+    while (
+      editor.lastElementChild &&
+      editor.lastElementChild.tagName === "DIV" &&
+      editor.lastElementChild.innerHTML === "<br>"
+    ) {
       editor.removeChild(editor.lastElementChild);
     }
 
     // Find the last image container in the editor
-    const imageContainers = editor.querySelectorAll('.image-container');
-    const lastImageContainer = imageContainers[imageContainers.length - 1] as HTMLElement;
+    const imageContainers = editor.querySelectorAll(".image-container");
+    const lastImageContainer = imageContainers[
+      imageContainers.length - 1
+    ] as HTMLElement;
 
     // Check if we should group images - look for last image container and check if there's only empty content after it
     let shouldGroupImages = false;
@@ -212,7 +215,7 @@ export default function EnhancedRichTextEditor({
         for (let i = lastImageIndex + 1; i < children.length; i++) {
           const child = children[i];
           // If it's a div with just <br>, it's empty
-          if (child.tagName === 'DIV' && child.innerHTML === '<br>') {
+          if (child.tagName === "DIV" && child.innerHTML === "<br>") {
             continue;
           }
           // If it has any text content, there's content after the image
@@ -228,17 +231,18 @@ export default function EnhancedRichTextEditor({
 
     if (shouldGroupImages && lastImageContainer) {
       // Calculate how many images are already in the container
-      const existingImages = lastImageContainer.querySelectorAll('img');
+      const existingImages = lastImageContainer.querySelectorAll("img");
       const containerWidth = 600; // increased container width
       const imageWidth = 120 + 8; // reduced image width + margin
       const maxImagesPerRow = Math.floor(containerWidth / imageWidth);
 
       if (existingImages.length < maxImagesPerRow) {
         // Add image to existing container (side by side)
-        const imageElement = document.createElement('img');
+        const imageElement = document.createElement("img");
         imageElement.src = src;
         imageElement.alt = alt;
-        imageElement.style.cssText = "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+        imageElement.style.cssText =
+          "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
         lastImageContainer.appendChild(imageElement);
 
         // Position cursor after the container but don't create extra div
@@ -277,21 +281,26 @@ export default function EnhancedRichTextEditor({
     }
 
     // Remove any empty BR tags at the end
-    while (editor.lastChild && editor.lastChild.nodeType === Node.ELEMENT_NODE &&
-           (editor.lastChild as HTMLElement).tagName === 'BR') {
+    while (
+      editor.lastChild &&
+      editor.lastChild.nodeType === Node.ELEMENT_NODE &&
+      (editor.lastChild as HTMLElement).tagName === "BR"
+    ) {
       editor.removeChild(editor.lastChild);
     }
 
     // Create the image container
-    const imageContainer = document.createElement('div');
-    imageContainer.className = 'image-container';
-    imageContainer.contentEditable = 'false';
-    imageContainer.style.cssText = 'margin: 8px 0; text-align: center; user-select: none; line-height: 0;';
+    const imageContainer = document.createElement("div");
+    imageContainer.className = "image-container";
+    imageContainer.contentEditable = "false";
+    imageContainer.style.cssText =
+      "margin: 8px 0; text-align: center; user-select: none; line-height: 0;";
 
-    const imageElement = document.createElement('img');
+    const imageElement = document.createElement("img");
     imageElement.src = src;
     imageElement.alt = alt;
-    imageElement.style.cssText = "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+    imageElement.style.cssText =
+      "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
 
     imageContainer.appendChild(imageElement);
 
@@ -303,8 +312,8 @@ export default function EnhancedRichTextEditor({
       const selection = window.getSelection();
       if (selection) {
         // Create a div for text input after the image
-        const textDiv = document.createElement('div');
-        textDiv.innerHTML = '<br>';
+        const textDiv = document.createElement("div");
+        textDiv.innerHTML = "<br>";
         editor.appendChild(textDiv);
 
         const range = document.createRange();
@@ -324,15 +333,21 @@ export default function EnhancedRichTextEditor({
     if (!editor) return;
 
     // Clean up empty divs at the end first
-    while (editor.lastElementChild &&
-           editor.lastElementChild.tagName === 'DIV' &&
-           editor.lastElementChild.innerHTML === '<br>') {
+    while (
+      editor.lastElementChild &&
+      editor.lastElementChild.tagName === "DIV" &&
+      editor.lastElementChild.innerHTML === "<br>"
+    ) {
       editor.removeChild(editor.lastElementChild);
     }
 
     // Find the last media container (images or videos) in the editor
-    const mediaContainers = editor.querySelectorAll('.image-container, .video-container');
-    const lastMediaContainer = mediaContainers[mediaContainers.length - 1] as HTMLElement;
+    const mediaContainers = editor.querySelectorAll(
+      ".image-container, .video-container",
+    );
+    const lastMediaContainer = mediaContainers[
+      mediaContainers.length - 1
+    ] as HTMLElement;
 
     // Check if we should group with existing media
     let shouldGroupMedia = false;
@@ -347,7 +362,7 @@ export default function EnhancedRichTextEditor({
         let hasContentAfterMedia = false;
         for (let i = lastMediaIndex + 1; i < children.length; i++) {
           const child = children[i];
-          if (child.tagName === 'DIV' && child.innerHTML === '<br>') {
+          if (child.tagName === "DIV" && child.innerHTML === "<br>") {
             continue;
           }
           if (child.textContent && child.textContent.trim()) {
@@ -362,27 +377,32 @@ export default function EnhancedRichTextEditor({
 
     if (shouldGroupMedia && lastMediaContainer) {
       // Calculate how many media items are already in the container
-      const existingMedia = lastMediaContainer.querySelectorAll('img, .video-preview');
+      const existingMedia = lastMediaContainer.querySelectorAll(
+        "img, .video-preview",
+      );
       const containerWidth = 800;
       const mediaWidth = 240 + 8; // media width + margin (for videos), images are still 120px
       const maxMediaPerRow = Math.floor(containerWidth / mediaWidth);
 
       if (existingMedia.length < maxMediaPerRow) {
         // Add video preview to existing container (side by side)
-        const videoPreview = document.createElement('div');
-        videoPreview.className = 'video-preview';
-        videoPreview.style.cssText = "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+        const videoPreview = document.createElement("div");
+        videoPreview.className = "video-preview";
+        videoPreview.style.cssText =
+          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
 
         // Create video element for thumbnail
-        const videoElement = document.createElement('video');
+        const videoElement = document.createElement("video");
         videoElement.src = src;
-        videoElement.style.cssText = "width: 100%; height: 100%; object-fit: cover;";
+        videoElement.style.cssText =
+          "width: 100%; height: 100%; object-fit: cover;";
         videoElement.muted = true;
         videoElement.preload = "metadata";
 
         // Create pure glassmorphism play button overlay
-        const playOverlay = document.createElement('div');
-        playOverlay.style.cssText = "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
+        const playOverlay = document.createElement("div");
+        playOverlay.style.cssText =
+          "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
         playOverlay.innerHTML = `
           <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
             <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
@@ -391,13 +411,16 @@ export default function EnhancedRichTextEditor({
 
         if (!isEditMode) {
           const clickHandler = () => {
-            console.log('Video clicked:', src, name);
-            if (typeof window !== 'undefined' && (window as any).openImageModal) {
+            console.log("Video clicked:", src, name);
+            if (
+              typeof window !== "undefined" &&
+              (window as any).openImageModal
+            ) {
               (window as any).openImageModal(src, name, true);
             }
           };
-          videoPreview.addEventListener('click', clickHandler);
-          playOverlay.addEventListener('click', clickHandler);
+          videoPreview.addEventListener("click", clickHandler);
+          playOverlay.addEventListener("click", clickHandler);
         }
 
         videoPreview.appendChild(videoElement);
@@ -431,26 +454,30 @@ export default function EnhancedRichTextEditor({
     }
 
     // Create the media container
-    const mediaContainer = document.createElement('div');
-    mediaContainer.className = 'image-container'; // Use same class for consistent styling
-    mediaContainer.contentEditable = 'false';
-    mediaContainer.style.cssText = 'margin: 8px 0; text-align: center; user-select: none; line-height: 0;';
+    const mediaContainer = document.createElement("div");
+    mediaContainer.className = "image-container"; // Use same class for consistent styling
+    mediaContainer.contentEditable = "false";
+    mediaContainer.style.cssText =
+      "margin: 8px 0; text-align: center; user-select: none; line-height: 0;";
 
     // Create video preview
-    const videoPreview = document.createElement('div');
-    videoPreview.className = 'video-preview';
-    videoPreview.style.cssText = "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
+    const videoPreview = document.createElement("div");
+    videoPreview.className = "video-preview";
+    videoPreview.style.cssText =
+      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;";
 
     // Create video element for thumbnail
-    const videoElement = document.createElement('video');
+    const videoElement = document.createElement("video");
     videoElement.src = src;
-    videoElement.style.cssText = "width: 100%; height: 100%; object-fit: cover;";
+    videoElement.style.cssText =
+      "width: 100%; height: 100%; object-fit: cover;";
     videoElement.muted = true;
     videoElement.preload = "metadata";
 
     // Create pure glassmorphism play button overlay
-    const playOverlay = document.createElement('div');
-    playOverlay.style.cssText = "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
+    const playOverlay = document.createElement("div");
+    playOverlay.style.cssText =
+      "position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;";
     playOverlay.innerHTML = `
       <svg width="48" height="48" viewBox="0 0 24 24" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));">
         <path d="M8 5v14l11-7z" fill="rgba(255,255,255,0.9)" style="backdrop-filter: blur(10px);"/>
@@ -459,13 +486,13 @@ export default function EnhancedRichTextEditor({
 
     if (!isEditMode) {
       const clickHandler = () => {
-        console.log('Video clicked:', src, name);
-        if (typeof window !== 'undefined' && (window as any).openImageModal) {
+        console.log("Video clicked:", src, name);
+        if (typeof window !== "undefined" && (window as any).openImageModal) {
           (window as any).openImageModal(src, name, true);
         }
       };
-      videoPreview.addEventListener('click', clickHandler);
-      playOverlay.addEventListener('click', clickHandler);
+      videoPreview.addEventListener("click", clickHandler);
+      playOverlay.addEventListener("click", clickHandler);
     }
 
     videoPreview.appendChild(videoElement);
@@ -480,8 +507,8 @@ export default function EnhancedRichTextEditor({
       const selection = window.getSelection();
       if (selection) {
         // Create a div for text input after the media
-        const textDiv = document.createElement('div');
-        textDiv.innerHTML = '<br>';
+        const textDiv = document.createElement("div");
+        textDiv.innerHTML = "<br>";
         editor.appendChild(textDiv);
 
         const range = document.createRange();
