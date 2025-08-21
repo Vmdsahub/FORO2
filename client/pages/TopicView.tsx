@@ -184,6 +184,56 @@ export default function TopicView() {
     }
   };
 
+  const handleEditTopic = () => {
+    if (!topic) return;
+    setEditTitle(topic.title);
+    setEditDescription(topic.description);
+    setEditContent(topic.content);
+    setEditCategory(topic.category);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!topic || !user) return;
+
+    try {
+      const response = await fetch(`/api/topics/${topic.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({
+          title: editTitle,
+          description: editDescription,
+          content: editContent,
+          category: editCategory,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setTopic(data.topic);
+        setIsEditing(false);
+        toast.success("Tópico editado com sucesso!");
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.message || "Erro ao editar tópico");
+      }
+    } catch (error) {
+      console.error("Error editing topic:", error);
+      toast.error("Erro ao editar tópico");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditTitle("");
+    setEditDescription("");
+    setEditContent("");
+    setEditCategory("");
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
