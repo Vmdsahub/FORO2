@@ -49,6 +49,13 @@ export default function MediaClickHandler({
       );
       videos.forEach((video) => {
         const videoEl = video as HTMLElement;
+
+        // Skip if in edit mode (RichTextEditor)
+        if (videoEl.getAttribute("data-edit-mode") === "true" ||
+            videoEl.closest(".rich-editor")) {
+          return;
+        }
+
         videoEl.setAttribute("data-click-handled", "true");
         videoEl.style.cursor = "pointer";
 
