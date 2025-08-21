@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Topic } from "@shared/forum";
 import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
+import { cleanContentForSaving } from "@/utils/contentCleaner";
 
 interface ForumCategory {
   id: string;
