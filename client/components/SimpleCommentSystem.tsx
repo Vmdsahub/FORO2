@@ -40,6 +40,7 @@ function CommentItem({
   onDelete,
   onQuote,
   onReport,
+  onEdit,
 }: {
   comment: Comment;
   topicAuthorId: string;
@@ -47,8 +48,11 @@ function CommentItem({
   onDelete: (commentId: string) => Promise<void>;
   onQuote: (comment: Comment) => void;
   onReport: (comment: Comment) => void;
+  onEdit: (commentId: string, content: string) => Promise<void>;
 }) {
   const { user, isAdmin } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
 
   const isTopicOwner = user?.id === topicAuthorId;
   const isCommentOwner = user?.id === comment.authorId;
