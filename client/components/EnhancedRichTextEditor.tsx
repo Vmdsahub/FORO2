@@ -176,6 +176,14 @@ export default function EnhancedRichTextEditor({
     toast.error("❌ Falha na verificação de segurança. Tente outro arquivo.");
   };
 
+  const removeMediaElement = (element: HTMLElement) => {
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+      handleInput();
+      toast.success("Mídia removida com sucesso");
+    }
+  };
+
   const insertImageHtml = (src: string, alt: string) => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -225,19 +233,49 @@ export default function EnhancedRichTextEditor({
 
     if (shouldGroupImages && lastImageContainer) {
       // Calculate how many images are already in the container
-      const existingImages = lastImageContainer.querySelectorAll("img");
+      const existingImages =
+        lastImageContainer.querySelectorAll(".image-wrapper");
       const containerWidth = 600; // increased container width
       const imageWidth = 120 + 8; // reduced image width + margin
       const maxImagesPerRow = Math.floor(containerWidth / imageWidth);
 
       if (existingImages.length < maxImagesPerRow) {
         // Add image to existing container (side by side)
+        const imageWrapper = document.createElement("div");
+        imageWrapper.className = "image-wrapper";
+        imageWrapper.style.cssText =
+          "position: relative; display: inline-block; margin: 0 8px 8px 0; vertical-align: top;";
+
         const imageElement = document.createElement("img");
         imageElement.src = src;
         imageElement.alt = alt;
         imageElement.style.cssText =
-          "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
-        lastImageContainer.appendChild(imageElement);
+          "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block;";
+
+        // Only add delete button if in edit mode
+        if (isEditMode) {
+          const deleteButton = document.createElement("button");
+          deleteButton.innerHTML = "🗑️";
+          deleteButton.style.cssText =
+            "position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.2s; pointer-events: auto;";
+          deleteButton.title = "Remover imagem";
+          deleteButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            removeMediaElement(imageWrapper);
+          });
+          deleteButton.addEventListener("mouseover", () => {
+            deleteButton.style.background = "#dc2626";
+            deleteButton.style.transform = "scale(1.1)";
+          });
+          deleteButton.addEventListener("mouseout", () => {
+            deleteButton.style.background = "#ef4444";
+            deleteButton.style.transform = "scale(1)";
+          });
+          imageWrapper.appendChild(deleteButton);
+        }
+
+        imageWrapper.appendChild(imageElement);
+        lastImageContainer.appendChild(imageWrapper);
 
         // Position cursor after the container but don't create extra div
         const selection = window.getSelection();
@@ -290,13 +328,42 @@ export default function EnhancedRichTextEditor({
     imageContainer.style.cssText =
       "margin: 8px 0; text-align: center; user-select: none; line-height: 0;";
 
+    // Create image wrapper with delete button
+    const imageWrapper = document.createElement("div");
+    imageWrapper.className = "image-wrapper";
+    imageWrapper.style.cssText =
+      "position: relative; display: inline-block; margin: 0 8px 8px 0; vertical-align: top;";
+
     const imageElement = document.createElement("img");
     imageElement.src = src;
     imageElement.alt = alt;
     imageElement.style.cssText =
-      "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
+      "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: block;";
 
-    imageContainer.appendChild(imageElement);
+    // Only add delete button if in edit mode
+    if (isEditMode) {
+      const deleteButton = document.createElement("button");
+      deleteButton.innerHTML = "🗑��";
+      deleteButton.style.cssText =
+        "position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.2s; pointer-events: auto;";
+      deleteButton.title = "Remover imagem";
+      deleteButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        removeMediaElement(imageWrapper);
+      });
+      deleteButton.addEventListener("mouseover", () => {
+        deleteButton.style.background = "#dc2626";
+        deleteButton.style.transform = "scale(1.1)";
+      });
+      deleteButton.addEventListener("mouseout", () => {
+        deleteButton.style.background = "#ef4444";
+        deleteButton.style.transform = "scale(1)";
+      });
+      imageWrapper.appendChild(deleteButton);
+    }
+
+    imageWrapper.appendChild(imageElement);
+    imageContainer.appendChild(imageWrapper);
 
     // Insert the container at the end of the editor
     editor.appendChild(imageContainer);
@@ -376,7 +443,7 @@ export default function EnhancedRichTextEditor({
     if (shouldGroupMedia && lastMediaContainer) {
       // Calculate how many media items are already in the container
       const existingMedia = lastMediaContainer.querySelectorAll(
-        "img, .video-preview",
+        ".image-wrapper, .video-wrapper",
       );
       const containerWidth = 800;
       const mediaWidth = 240 + 8; // media width + margin (for videos), images are still 120px
@@ -384,10 +451,15 @@ export default function EnhancedRichTextEditor({
 
       if (existingMedia.length < maxMediaPerRow) {
         // Add video preview to existing container (side by side)
+        const videoWrapper = document.createElement("div");
+        videoWrapper.className = "video-wrapper";
+        videoWrapper.style.cssText =
+          "position: relative; display: inline-block; margin: 0 4px 4px 0; vertical-align: top;";
+
         const videoPreview = document.createElement("div");
         videoPreview.className = "video-preview";
         videoPreview.style.cssText =
-          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
+          "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
 
         // Create video thumbnail using canvas approach to eliminate black bar
         const videoElement = document.createElement("video");
@@ -430,9 +502,32 @@ export default function EnhancedRichTextEditor({
           playOverlay.addEventListener("click", clickHandler);
         }
 
+        // Only add delete button if in edit mode
+        if (isEditMode) {
+          const deleteButton = document.createElement("button");
+          deleteButton.innerHTML = "🗑️";
+          deleteButton.style.cssText =
+            "position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.2s; pointer-events: auto;";
+          deleteButton.title = "Remover vídeo";
+          deleteButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            removeMediaElement(videoWrapper);
+          });
+          deleteButton.addEventListener("mouseover", () => {
+            deleteButton.style.background = "#dc2626";
+            deleteButton.style.transform = "scale(1.1)";
+          });
+          deleteButton.addEventListener("mouseout", () => {
+            deleteButton.style.background = "#ef4444";
+            deleteButton.style.transform = "scale(1)";
+          });
+          videoWrapper.appendChild(deleteButton);
+        }
+
         videoPreview.appendChild(videoElement);
         videoPreview.appendChild(playOverlay);
-        lastMediaContainer.appendChild(videoPreview);
+        videoWrapper.appendChild(videoPreview);
+        lastMediaContainer.appendChild(videoWrapper);
 
         // Position cursor after the container
         const selection = window.getSelection();
@@ -467,11 +562,17 @@ export default function EnhancedRichTextEditor({
     mediaContainer.style.cssText =
       "margin: 8px 0; text-align: center; user-select: none; line-height: 0;";
 
+    // Create video wrapper with delete button
+    const videoWrapper = document.createElement("div");
+    videoWrapper.className = "video-wrapper";
+    videoWrapper.style.cssText =
+      "position: relative; display: inline-block; margin: 0 4px 4px 0; vertical-align: top;";
+
     // Create video preview
     const videoPreview = document.createElement("div");
     videoPreview.className = "video-preview";
     videoPreview.style.cssText =
-      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
+      "position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: #1a1a1a; cursor: pointer; overflow: hidden; line-height: 0;";
 
     // Create video thumbnail using improved approach to eliminate black bar
     const videoElement = document.createElement("video");
@@ -512,9 +613,32 @@ export default function EnhancedRichTextEditor({
       playOverlay.addEventListener("click", clickHandler);
     }
 
+    // Only add delete button if in edit mode
+    if (isEditMode) {
+      const deleteButton = document.createElement("button");
+      deleteButton.innerHTML = "🗑️";
+      deleteButton.style.cssText =
+        "position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 12px; cursor: pointer; z-index: 20; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.2s; pointer-events: auto;";
+      deleteButton.title = "Remover vídeo";
+      deleteButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        removeMediaElement(videoWrapper);
+      });
+      deleteButton.addEventListener("mouseover", () => {
+        deleteButton.style.background = "#dc2626";
+        deleteButton.style.transform = "scale(1.1)";
+      });
+      deleteButton.addEventListener("mouseout", () => {
+        deleteButton.style.background = "#ef4444";
+        deleteButton.style.transform = "scale(1)";
+      });
+      videoWrapper.appendChild(deleteButton);
+    }
+
     videoPreview.appendChild(videoElement);
     videoPreview.appendChild(playOverlay);
-    mediaContainer.appendChild(videoPreview);
+    videoWrapper.appendChild(videoPreview);
+    mediaContainer.appendChild(videoWrapper);
 
     // Insert the container at the end of the editor
     editor.appendChild(mediaContainer);
@@ -842,16 +966,45 @@ export default function EnhancedRichTextEditor({
           overflow-wrap: normal;
         }
 
-        .rich-editor .image-container img {
-          margin: 0 4px 4px 0 !important;
-          display: inline-block !important;
-          vertical-align: top !important;
-          max-width: 120px !important;
-          width: 120px !important;
+        .rich-editor .image-wrapper {
+          position: relative;
+          display: inline-block;
+          margin: 0 8px 8px 0 !important;
+          vertical-align: top;
         }
 
-        .rich-editor .image-container img:last-child {
+        .rich-editor .video-wrapper {
+          position: relative;
+          display: inline-block;
+          margin: 0 4px 4px 0 !important;
+          vertical-align: top;
+        }
+
+        .rich-editor .image-wrapper:last-child,
+        .rich-editor .video-wrapper:last-child {
           margin-right: 0 !important;
+        }
+
+        .rich-editor .image-wrapper img {
+          display: block !important;
+          max-width: 120px !important;
+          width: 120px !important;
+          margin: 0 !important;
+        }
+
+        /* Delete button styles */
+        .rich-editor .image-wrapper button,
+        .rich-editor .video-wrapper button {
+          pointer-events: auto !important;
+          user-select: none !important;
+          cursor: pointer !important;
+        }
+
+        /* Ensure delete buttons are always visible and clickable */
+        .rich-editor .image-wrapper:hover button,
+        .rich-editor .video-wrapper:hover button {
+          opacity: 1 !important;
+          transform: scale(1.05) !important;
         }
         
         /* Ensure proper spacing and cursor placement */

@@ -278,6 +278,40 @@ export const handleDeleteComment: RequestHandler = (req, res) => {
   res.json({ message: "Comentário deletado" });
 };
 
+export const handleEditComment: RequestHandler = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Login necessário" });
+  }
+
+  const { commentId } = req.params;
+  const comment = commentsStore.get(commentId);
+
+  if (!comment) {
+    return res.status(404).json({ message: "Comentário não encontrado" });
+  }
+
+  // Verificar se é o autor
+  if (comment.authorId !== req.user.id) {
+    return res.status(403).json({ message: "Sem permissão para editar" });
+  }
+
+  const { content } = req.body;
+
+  if (!content || !content.trim()) {
+    return res.status(400).json({ message: "Conteúdo não pode estar vazio" });
+  }
+
+  // Atualizar comentário
+  const updatedComment = {
+    ...comment,
+    content: content.trim(),
+  };
+
+  commentsStore.set(commentId, updatedComment);
+
+  res.json({ message: "Comentário atualizado", comment: updatedComment });
+};
+
 // Função para inicializar dados demo
 export function initializeCommentsDemo() {
   // Limpar dados existentes

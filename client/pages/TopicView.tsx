@@ -10,6 +10,7 @@ import SimpleCommentSystem from "@/components/SimpleCommentSystem";
 import UserPointsBadge from "@/components/UserPointsBadge";
 import UserHoverCard from "@/components/UserHoverCard";
 import ReportModal from "@/components/ReportModal";
+import EnhancedRichTextEditor from "@/components/EnhancedRichTextEditor";
 
 interface Topic {
   id: string;
@@ -41,6 +42,9 @@ export default function TopicView() {
   const [isLoading, setIsLoading] = useState(true);
   const [savedTopicIds, setSavedTopicIds] = useState<string[]>([]);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [isEditingTopic, setIsEditingTopic] = useState(false);
+  const [editTopicTitle, setEditTopicTitle] = useState("");
+  const [editTopicContent, setEditTopicContent] = useState("");
 
   useEffect(() => {
     fetchTopic();
@@ -146,6 +150,68 @@ export default function TopicView() {
     }
   };
 
+  const handleEditTopic = () => {
+    if (!topic || !user || user.id !== topic.authorId) return;
+
+    setEditTopicTitle(topic.title);
+    setEditTopicContent(topic.content);
+    setIsEditingTopic(true);
+  };
+
+  const handleSaveTopicEdit = async () => {
+    if (!topic || !user || user.id !== topic.authorId) return;
+
+    if (!editTopicTitle.trim()) {
+      toast.error("Título não pode estar vazio");
+      return;
+    }
+
+    if (!editTopicContent.trim()) {
+      toast.error("Conteúdo não pode estar vazio");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/topics/${topicId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({
+          title: editTopicTitle.trim(),
+          content: editTopicContent.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        const updatedTopic = await response.json();
+        setTopic((prev) =>
+          prev
+            ? {
+                ...prev,
+                title: updatedTopic.title,
+                content: updatedTopic.content,
+              }
+            : null,
+        );
+        setIsEditingTopic(false);
+        toast.success("Tópico atualizado com sucesso!");
+      } else {
+        toast.error("Erro ao atualizar tópico");
+      }
+    } catch (error) {
+      console.error("Error updating topic:", error);
+      toast.error("Erro ao atualizar tópico");
+    }
+  };
+
+  const handleCancelTopicEdit = () => {
+    setIsEditingTopic(false);
+    setEditTopicTitle("");
+    setEditTopicContent("");
+  };
+
   const handleSaveTopic = () => {
     if (!user || !topic) {
       toast.error("Faça login para salvar tópicos");
@@ -242,14 +308,52 @@ export default function TopicView() {
                 {topic.category}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-black mb-4">
-              {topic.title}
-            </h1>
+            {isEditingTopic ? (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="edit-title">Título</Label>
+                  <Input
+                    id="edit-title"
+                    value={editTopicTitle}
+                    onChange={(e) => setEditTopicTitle(e.target.value)}
+                    placeholder="Título do tópico"
+                    className="text-xl font-bold"
+                  />
+                </div>
+              </div>
+            ) : (
+              <h1 className="text-2xl font-bold text-black mb-4">
+                {topic.title}
+              </h1>
+            )}
           </div>
 
           {/* Topic Content */}
           <div className="border-t border-gray-100 pt-4 mb-4">
-            <MarkdownRenderer content={topic.content} />
+            {isEditingTopic ? (
+              <div className="space-y-4">
+                <Label htmlFor="edit-content">Conteúdo</Label>
+                <EnhancedRichTextEditor
+                  value={editTopicContent}
+                  onChange={setEditTopicContent}
+                  placeholder="Escreva o conteúdo do seu tópico..."
+                  isEditMode={true}
+                />
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={handleSaveTopicEdit}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Salvar Alterações
+                  </Button>
+                  <Button onClick={handleCancelTopicEdit} variant="outline">
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <MarkdownRenderer content={topic.content} />
+            )}
           </div>
 
           {/* Actions */}
@@ -317,6 +421,29 @@ export default function TopicView() {
                     />
                   </svg>
                   {savedTopicIds.includes(topic.id) ? "Salvo" : "Salvar"}
+                </button>
+              )}
+
+              {/* Botão de editar - apenas para o autor */}
+              {user && user.id === topic.authorId && !isEditingTopic && (
+                <button
+                  onClick={handleEditTopic}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                  title="Editar tópico"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  Editar
                 </button>
               )}
 

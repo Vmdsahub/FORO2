@@ -40,6 +40,7 @@ function CommentItem({
   onDelete,
   onQuote,
   onReport,
+  onEdit,
 }: {
   comment: Comment;
   topicAuthorId: string;
@@ -47,8 +48,11 @@ function CommentItem({
   onDelete: (commentId: string) => Promise<void>;
   onQuote: (comment: Comment) => void;
   onReport: (comment: Comment) => void;
+  onEdit: (commentId: string, newContent: string) => Promise<void>;
 }) {
   const { user, isAdmin } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState("");
 
   const isTopicOwner = user?.id === topicAuthorId;
   const isCommentOwner = user?.id === comment.authorId;
@@ -62,6 +66,31 @@ function CommentItem({
     } catch (error) {
       toast.error("Erro ao excluir");
     }
+  };
+
+  const handleEdit = () => {
+    setEditContent(comment.content);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editContent.trim()) {
+      toast.error("Conteúdo não pode estar vazio");
+      return;
+    }
+
+    try {
+      await onEdit(comment.id, editContent.trim());
+      setIsEditing(false);
+      toast.success("Comentário atualizado!");
+    } catch (error) {
+      toast.error("Erro ao atualizar comentário");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditContent("");
   };
 
   const formatDate = (dateString: string) => {
@@ -122,7 +151,34 @@ function CommentItem({
 
           {/* Conteúdo do comentário */}
           <div className="text-gray-700 mb-8 text-sm leading-relaxed pr-24 pt-6">
-            <MarkdownRenderer content={comment.content} />
+            {isEditing ? (
+              <div className="space-y-3">
+                <EnhancedRichTextEditor
+                  value={editContent}
+                  onChange={setEditContent}
+                  placeholder="Edite seu comentário..."
+                  isEditMode={true}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={handleSaveEdit}
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Salvar
+                  </Button>
+                  <Button
+                    onClick={handleCancelEdit}
+                    size="sm"
+                    variant="outline"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <MarkdownRenderer content={comment.content} />
+            )}
           </div>
 
           {/* Ações no canto inferior direito */}
@@ -153,7 +209,7 @@ function CommentItem({
               {comment.likes}
             </button>
 
-            {user && (
+            {user && !isEditing && (
               <>
                 <button
                   onClick={() => onQuote(comment)}
@@ -162,6 +218,16 @@ function CommentItem({
                 >
                   Citar
                 </button>
+
+                {user.id === comment.authorId && (
+                  <button
+                    onClick={handleEdit}
+                    className="text-xs text-blue-500 hover:text-blue-700 px-2 py-1 rounded transition-colors"
+                    title="Editar comentário"
+                  >
+                    Editar
+                  </button>
+                )}
 
                 {user.id !== comment.authorId && (
                   <button
@@ -346,6 +412,31 @@ export default function SimpleCommentSystem({
     }
   };
 
+  // Editar comentário
+  const handleEdit = async (commentId: string, newContent: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+        body: JSON.stringify({
+          content: cleanContentForSaving(newContent),
+        }),
+      });
+
+      if (response.ok) {
+        await loadComments();
+      } else {
+        const data = await response.json();
+        toast.error(data.message || "Erro ao editar comentário");
+      }
+    } catch (error) {
+      toast.error("Erro ao editar comentário");
+    }
+  };
+
   // Criar comentário
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -503,6 +594,7 @@ export default function SimpleCommentSystem({
               onDelete={handleDelete}
               onQuote={handleQuote}
               onReport={handleReport}
+              onEdit={handleEdit}
             />
           ))}
 

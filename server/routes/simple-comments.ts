@@ -431,6 +431,44 @@ export const deleteComment: RequestHandler = (req, res) => {
   }
 };
 
+export const editComment: RequestHandler = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Login necessário" });
+  }
+
+  try {
+    const { commentId } = req.params;
+    const { content } = req.body;
+    const comment = comments.get(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: "Comentário não encontrado" });
+    }
+
+    // Verificar se é o autor
+    if (comment.authorId !== req.user.id) {
+      return res.status(403).json({ message: "Sem permissão para editar" });
+    }
+
+    if (!content || !content.trim()) {
+      return res.status(400).json({ message: "Conteúdo não pode estar vazio" });
+    }
+
+    // Atualizar comentário
+    const updatedComment = {
+      ...comment,
+      content: content.trim(),
+    };
+
+    comments.set(commentId, updatedComment);
+
+    res.json({ message: "Comentário atualizado", comment: updatedComment });
+  } catch (error) {
+    console.error("[COMMENTS] Erro ao editar comentário:", error);
+    res.status(500).json({ message: "Erro interno" });
+  }
+};
+
 // Inicializar dados demo mais extensos para testar profundidade
 export function initializeDemo() {
   // Limpar dados

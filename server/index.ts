@@ -23,6 +23,7 @@ import {
   handleLikeTopic,
   handleLikeComment,
   handleDeleteTopic,
+  handleEditTopic,
   handleDeleteComment,
   handleGetUserTopics,
   handleGetCategoryStats,
@@ -43,6 +44,7 @@ import {
   createComment,
   likeComment,
   deleteComment,
+  editComment,
   initializeDemo,
 } from "./routes/simple-comments";
 import {
@@ -130,6 +132,7 @@ export function createServer() {
 
   // Admin routes
   app.delete("/api/topics/:topicId", authenticateToken, handleDeleteTopic);
+  app.put("/api/topics/:topicId", authenticateToken, handleEditTopic);
   // app.delete(
   //   "/api/comments/:commentId",
   //   authenticateToken,
@@ -162,6 +165,7 @@ export function createServer() {
   app.post("/api/comments/:topicId", authenticateToken, createComment);
   app.post("/api/comments/:commentId/like", authenticateToken, likeComment);
   app.delete("/api/comments/:commentId", authenticateToken, deleteComment);
+  app.put("/api/comments/:commentId", authenticateToken, editComment);
 
   // Newsletter routes
   app.get("/api/newsletter/articles", handleGetArticles);

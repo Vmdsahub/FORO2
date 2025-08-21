@@ -855,6 +855,44 @@ export const handleDeleteTopic: RequestHandler = (req, res) => {
   res.json({ message: "Tópico excluído com sucesso" });
 };
 
+export const handleEditTopic: RequestHandler = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Autenticação necessária" });
+  }
+
+  const { topicId } = req.params;
+  const { title, content } = req.body;
+  const topic = topics.get(topicId);
+
+  if (!topic) {
+    return res.status(404).json({ message: "Tópico não encontrado" });
+  }
+
+  // Verificar se é o autor
+  if (topic.authorId !== req.user.id) {
+    return res.status(403).json({ message: "Sem permissão para editar" });
+  }
+
+  if (!title || !title.trim()) {
+    return res.status(400).json({ message: "Título não pode estar vazio" });
+  }
+
+  if (!content || !content.trim()) {
+    return res.status(400).json({ message: "Conteúdo não pode estar vazio" });
+  }
+
+  // Atualizar tópico
+  const updatedTopic = {
+    ...topic,
+    title: title.trim(),
+    content: content.trim(),
+  };
+
+  topics.set(topicId, updatedTopic);
+
+  res.json({ message: "Tópico atualizado com sucesso", topic: updatedTopic });
+};
+
 export const handleDeleteComment: RequestHandler = (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: "Autenticação necessária" });

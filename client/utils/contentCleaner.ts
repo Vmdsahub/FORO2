@@ -10,10 +10,22 @@ export function cleanContentForDisplay(content: string): string {
     .replace(/data-edit-mode="true"/g, "")
     .replace(/data-edit-mode="false"/g, "")
     .replace(/data-edit-mode='true'/g, "")
-    .replace(/data-edit-mode='false'/g, "")
-    // Clean up any extra spaces left by attribute removal
+    .replace(/data-edit-mode='false'/g, "");
+
+  // Remove delete buttons completely from published content
+  cleanedContent = cleanedContent.replace(
+    /<button[^>]*title="Remover [^"]*"[^>]*>🗑️<\/button>/g,
+    "",
+  );
+
+  // Also remove any leftover button elements with trash emoji
+  cleanedContent = cleanedContent.replace(/<button[^>]*>🗑️<\/button>/g, "");
+
+  // Clean up any extra spaces left by removal
+  cleanedContent = cleanedContent
     .replace(/\s+/g, " ")
-    .replace(/\s+>/g, ">");
+    .replace(/\s+>/g, ">")
+    .trim();
 
   return cleanedContent;
 }
