@@ -367,6 +367,7 @@ function App() {
           <BrowserRouter>
             <div className="min-h-screen bg-gray-50 transition-all duration-300 ease-in-out hide-scrollbar app-container">
               <GlassmorphismBackground />
+              <MediaClickHandler />
               <Header activeSection={activeSection} />
               <Routes>
                 <Route
