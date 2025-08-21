@@ -230,7 +230,7 @@ export default function EnhancedRichTextEditor({
         imageElement.style.cssText = "max-width: 120px; width: 120px; height: auto; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 8px 8px 0; display: inline-block; vertical-align: top;";
         lastImageContainer.appendChild(imageElement);
 
-        // Position cursor after the container
+        // Position cursor after the container but don't create extra div
         const selection = window.getSelection();
         if (selection) {
           const range = document.createRange();
