@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   X,
   Download,
@@ -162,6 +163,7 @@ export default function ImageModal({
     // Check if fullscreen is available and allowed
     if (!document.fullscreenEnabled) {
       console.warn("Fullscreen não está disponível neste contexto");
+      toast.info("Abrindo vídeo em nova aba (fullscreen não disponível)");
       // Fallback: open video in new tab
       window.open(src, '_blank');
       return;
@@ -172,6 +174,7 @@ export default function ImageModal({
       const permissions = await navigator.permissions?.query?.({ name: 'fullscreen' as any });
       if (permissions && permissions.state === 'denied') {
         console.warn("Permissão de fullscreen negada");
+        toast.info("Abrindo vídeo em nova aba (permissão de fullscreen negada)");
         window.open(src, '_blank');
         return;
       }
@@ -191,6 +194,7 @@ export default function ImageModal({
       }
     } catch (error) {
       console.warn("Fullscreen bloqueado por política de segurança, abrindo em nova aba:", error);
+      toast.info("Abrindo vídeo em nova aba (fullscreen bloqueado)");
       // Graceful fallback: open in new tab
       window.open(src, '_blank');
     }
