@@ -211,11 +211,11 @@ export default function ImageModal({
                   minHeight: "300px",
                 }}
                 onClick={togglePlay}
+                preload="metadata"
+                playsInline
+                controls={false}
+                src={src}
               >
-                <source src={src} type="video/mp4" />
-                <source src={src} type="video/webm" />
-                <source src={src} type="video/mov" />
-                <source src={src} type="video/avi" />
                 Seu navegador não suporta vídeo HTML5.
               </video>
 
