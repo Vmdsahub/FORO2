@@ -116,7 +116,7 @@ export default function ImageModal({
     if (isPlaying) {
       controlsTimeoutRef.current = setTimeout(() => {
         setShowControls(false);
-      }, 3000);
+      }, 1500);
     }
   };
 
