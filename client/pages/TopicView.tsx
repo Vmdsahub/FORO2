@@ -300,14 +300,55 @@ export default function TopicView() {
                 {topic.category}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-black mb-4">
-              {topic.title}
-            </h1>
+            {isEditingTopic ? (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="edit-title">Título</Label>
+                  <Input
+                    id="edit-title"
+                    value={editTopicTitle}
+                    onChange={(e) => setEditTopicTitle(e.target.value)}
+                    placeholder="Título do tópico"
+                    className="text-xl font-bold"
+                  />
+                </div>
+              </div>
+            ) : (
+              <h1 className="text-2xl font-bold text-black mb-4">
+                {topic.title}
+              </h1>
+            )}
           </div>
 
           {/* Topic Content */}
           <div className="border-t border-gray-100 pt-4 mb-4">
-            <MarkdownRenderer content={topic.content} />
+            {isEditingTopic ? (
+              <div className="space-y-4">
+                <Label htmlFor="edit-content">Conteúdo</Label>
+                <EnhancedRichTextEditor
+                  value={editTopicContent}
+                  onChange={setEditTopicContent}
+                  placeholder="Escreva o conteúdo do seu tópico..."
+                  isEditMode={true}
+                />
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={handleSaveTopicEdit}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Salvar Alterações
+                  </Button>
+                  <Button
+                    onClick={handleCancelTopicEdit}
+                    variant="outline"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <MarkdownRenderer content={topic.content} />
+            )}
           </div>
 
           {/* Actions */}
