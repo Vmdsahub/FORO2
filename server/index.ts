@@ -132,6 +132,7 @@ export function createServer() {
 
   // Admin routes
   app.delete("/api/topics/:topicId", authenticateToken, handleDeleteTopic);
+  app.put("/api/topics/:topicId", authenticateToken, handleEditTopic);
   // app.delete(
   //   "/api/comments/:commentId",
   //   authenticateToken,
