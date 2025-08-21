@@ -27,7 +27,8 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
   // Process content and add click handlers
   const processContent = () => {
-    let processedContent = content;
+    // First clean any edit-mode attributes from content
+    let processedContent = cleanContentForDisplay(content);
 
     // Replace image patterns with clickable images
     processedContent = processedContent.replace(
