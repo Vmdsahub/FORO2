@@ -209,7 +209,7 @@ function CommentItem({
               {comment.likes}
             </button>
 
-            {user && (
+            {user && !isEditing && (
               <>
                 <button
                   onClick={() => onQuote(comment)}
@@ -218,6 +218,16 @@ function CommentItem({
                 >
                   Citar
                 </button>
+
+                {user.id === comment.authorId && (
+                  <button
+                    onClick={handleEdit}
+                    className="text-xs text-blue-500 hover:text-blue-700 px-2 py-1 rounded transition-colors"
+                    title="Editar comentário"
+                  >
+                    Editar
+                  </button>
+                )}
 
                 {user.id !== comment.authorId && (
                   <button
