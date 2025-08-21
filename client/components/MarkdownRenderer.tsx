@@ -73,7 +73,10 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
 
   // Configurar event listeners para vídeos após o render
   useEffect(() => {
+    console.log('🚀 MarkdownRenderer useEffect executado - content mudou');
+
     const timer = setTimeout(() => {
+      console.log('⏰ Executando setupVideoListeners após 200ms');
       if ((window as any).setupVideoListeners) {
         (window as any).setupVideoListeners();
       }
