@@ -121,7 +121,7 @@ function CommentItem({
 
           {/* Conteúdo do comentário */}
           <div className="text-gray-700 mb-8 text-sm leading-relaxed pr-24 pt-6">
-            <SimpleMarkdownRenderer content={comment.content} />
+            <MarkdownRenderer content={comment.content} />
           </div>
 
           {/* Ações no canto inferior direito */}
