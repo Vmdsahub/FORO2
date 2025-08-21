@@ -435,6 +435,56 @@ export const deleteComment: RequestHandler = (req, res) => {
   }
 };
 
+export const editComment: RequestHandler = (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Login necessário" });
+  }
+
+  try {
+    const { commentId } = req.params;
+    const comment = comments.get(commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: "Comentário não encontrado" });
+    }
+
+    // Verificar se o usuário é o autor do comentário
+    if (comment.authorId !== req.user.id) {
+      return res.status(403).json({ message: "Você só pode editar seus próprios comentários" });
+    }
+
+    const validatedData = editCommentSchema.parse(req.body);
+
+    // Atualizar o conteúdo
+    comment.content = validatedData.content;
+
+    res.json({
+      message: "Comentário editado com sucesso",
+      comment: {
+        id: comment.id,
+        content: comment.content,
+        author: comment.author,
+        authorId: comment.authorId,
+        authorAvatar: comment.authorAvatar,
+        topicId: comment.topicId,
+        createdAt: comment.createdAt,
+        likes: commentLikes.get(comment.id)?.size || 0,
+        isLiked: commentLikes.get(comment.id)?.has(req.user.id) || false,
+        quotedComment: comment.quotedComment,
+      },
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Dados inválidos",
+        errors: error.errors,
+      });
+    }
+    console.error("[COMMENTS] Erro ao editar comentário:", error);
+    res.status(500).json({ message: "Erro interno" });
+  }
+};
+
 // Inicializar dados demo mais extensos para testar profundidade
 export function initializeDemo() {
   // Limpar dados
