@@ -170,6 +170,7 @@ export default function ImageModal({
     <div
       className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
+      style={{ animation: 'none' }}
     >
       <div className="relative max-w-[90vw] max-h-[90vh] rounded-2xl overflow-hidden">
         {/* Glass container */}
