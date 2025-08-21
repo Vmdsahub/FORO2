@@ -67,8 +67,8 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         }, 0);
 
         return `
-          <div id="${videoId}" style="position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;">
-            <video style="width: 100%; height: 100%; object-fit: cover;" muted preload="metadata">
+          <div id="${videoId}" class="video-preview" style="position: relative; max-width: 240px; width: 240px; height: 180px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 4px 4px 0; display: inline-block; vertical-align: top; background: #000; cursor: pointer; overflow: hidden;">
+            <video style="width: 100%; height: 100%; object-fit: cover; display: block;" muted preload="metadata">
               <source src="${src}" type="video/mp4">
             </video>
             <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center;">
